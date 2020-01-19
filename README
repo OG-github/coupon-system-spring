@@ -1,0 +1,134 @@
+203024526
+Ofek Gadot
+
+PLEASE READ SPECIAL COMMENTS BELOW!
+=======================================
+=  README for CouponSystemJB 2019  =
+=======================================
+
+usage: java, SpringBoot, Hibernate
+
+==================
+=  Description:  =
+==================
+This project uses SpringBoot, Hibernate and SQL in order to create a logic system for a server
+with different types of users. Different users have different roles in the System and the logic
+revolves around purchasing Coupons for sale in our server. The server can be accessed by http
+requests and the system uses http Cookies with tokens in order to login clients and users. 
+
+=============================
+=  List of submitted files: =
+=============================
+
+1) README		
+2) CouponSystemJB
+
+======================
+=  Special Comments  =
+======================
+* Since the system is using cookies with tokens, in order to login with a different user or if
+simply the system was restarted, YOU HAVE TO DELETE THE PREVIOUS COOKIE otherwise the system
+will not work properly. The cookie is called "randToken" and it must be manually removed in 
+the browser before changing to a different user.
+
+* Id's are ignored by JSON so no need to provide Id's when looking for something. All titles, names
+and emails are unique so it must be searched by that.
+
+===================
+= HTTP requests: =
+===================
+
+Admin:
+
+http://localhost:8080/api/login?email=admin@csjb.com&password=1234 
+
+http://localhost:8080/api/admin/companies/add 
+{
+	"email" : "company1@jb.com",
+	"password" : "randomPassword",
+	"name" : "Company1"
+}
+
+http://localhost:8080/api/admin/customers/add
+{
+	"email" : "customer1@jb.com",
+	"password" : "randomPassword",
+	"firstName" : "Customer1",
+	"lastName" : "Customer1"
+}
+
+http://localhost:8080/api/admin/companies/findAll
+
+http://localhost:8080/api/admin/customers/findAll
+
+http://localhost:8080/api/admin/coupons/findAll
+
+http://localhost:8080/api/admin/companies/findByEmail?email=company1@jb.com
+
+http://localhost:8080/api/admin/customers/findByEmail?email=customer1@jb.com
+
+http://localhost:8080/api/admin/companies/delete?email=company1@jb.com
+
+http://localhost:8080/api/admin/customers/delete?email=customer1@jb.com
+
+
+Company:
+
+http://localhost:8080/api/company/get
+
+http://localhost:8080/api/company/getAllCoupons
+
+http://localhost:8080/api/company/getCompanyCoupons
+
+http://localhost:8080/api/company/addCoupon
+{
+	"title" : "coupon1",
+	"startDate" : "2018-01-10",
+	"endDate" : "2025-06-06",
+	"amount": 1,
+	"category": 5,
+	"description": "description for coupon",
+	"price": 20.622,
+	"image": "http://www.google.com/gibpics"
+}
+
+http://localhost:8080/api/company/deleteCouponByTitle?title=coupon1
+
+http://localhost:8080/api/company/updateCoupon
+{
+	"title" : "coupon3",
+	"startDate" : "2020-02-10",
+	"endDate" : "2025-06-06",
+	"amount": 11,
+	"category": 2,
+	"description": "description for coupon",
+	"price": 201.622,
+	"image": "http://www.google.com/gibpics"
+}
+
+http://localhost:8080/api/company/useCoupon?couponTitle=coupon1&customerEmail=customer1@jb.com
+
+http://localhost:8080/api/company/update
+{
+	"email": "company1@jb.com",
+	"password" : "12345",
+        "name": "Company1"
+}
+
+Customer:
+
+http://localhost:8080/api/customer/get
+
+http://localhost:8080/api/customer/getAllCoupons
+
+http://localhost:8080/api/customer/getCustomerCoupons
+
+http://localhost:8080/api/customer/update
+{
+	"email": "customer5@jb.com",
+	"password" : "12345",
+  "firstName": "new Name 1",
+	"lastName": "new Name 1"
+}
+
+http://localhost:8080/api/customer/purchase?title=coupon1
