@@ -89,12 +89,15 @@ public interface CompanyService extends EntityService {
     String useCoupon(String couponTitle, String customerEmail) throws CompanyServiceException, CouponException;
 
     /**
+     * Update the Company this service is handling. The Company will be updated by the Company parameter and its
+     * fields.
      *
-     * @param company
-     * @return
-     * @throws CompanyServiceException
-     * @throws CompanyException
-     * @throws UserException
+     * @param company Company entity with the updated field values.
+     * @return The updated Company with the new values.
+     * @throws CompanyServiceException Thrown if updating failed or Company is invalid or with invalid fields.
+     * @throws CompanyException        Thrown if updating the Company data base failed or Company is invalid or with
+     *                                 invalid fields.
+     * @throws UserException           Thrown if updating the User data base failed.
      */
     Company update(Company company) throws CompanyServiceException, CompanyException, UserException;
 
