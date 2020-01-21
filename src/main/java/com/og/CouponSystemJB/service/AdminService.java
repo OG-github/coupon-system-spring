@@ -20,7 +20,8 @@ import com.og.CouponSystemJB.service.exception.AdminServiceException;
 /**
  * This interface will sign all the methods and functions Admin Services have to implement on different Repositories.
  * The Services will use the Data Base Data Access Objects (DB DAO) and will handle the business logic and data
- * manipulation. Must extend EntityService so can be used by LoginService and be assigned to tokens.
+ * manipulation. Must extend EntityService so can be used by LoginService and be assigned to tokens. Each Service
+ * must represent one Client.
  */
 public interface AdminService extends EntityService {
 
@@ -103,7 +104,7 @@ public interface AdminService extends EntityService {
      *
      * @param email String unique email of the Customer for deletion.
      * @return String message if successful.
-     * @throws AdminServiceException Thrown if failed to delete to DB or Customer invalid.
+     * @throws AdminServiceException Thrown if failed to delete in DB or Customer invalid.
      */
     String deleteCustomerByEmail(String email) throws AdminServiceException;
 }

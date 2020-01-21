@@ -318,7 +318,7 @@ public class AdminServiceImpl implements AdminService {
      *
      * @param email String unique email of the Customer for deletion.
      * @return String message if successful.
-     * @throws AdminServiceException Thrown if failed to delete to DB or Customer invalid.
+     * @throws AdminServiceException Thrown if failed to delete in DB or Customer invalid.
      */
     @Override
     public String deleteCustomerByEmail(String email) throws AdminServiceException {
