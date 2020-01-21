@@ -77,12 +77,14 @@ public interface CompanyService extends EntityService {
     Coupon updateCoupon(Coupon coupon) throws CompanyServiceException, CouponException, CompanyException;
 
     /**
+     * Let a Customer entity use a Coupon. Customer will be identified by email and Coupon by title(unique
+     * parameters). Using the Coupon will reduce the amount of Coupons the Customer has by 1.
      *
-     * @param couponTitle
-     * @param customerEmail
-     * @return
-     * @throws CompanyServiceException
-     * @throws CouponException
+     * @param couponTitle   String title of the Coupon the Customer wants to use.
+     * @param customerEmail String email of the Customer using the Coupon.
+     * @return String message of update status.
+     * @throws CompanyServiceException Thrown if updating failed or Customer or Customer's email is invalid.
+     * @throws CouponException         Thrown if Coupon title or Coupon is invalid.
      */
     String useCoupon(String couponTitle, String customerEmail) throws CompanyServiceException, CouponException;
 
