@@ -69,15 +69,43 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
     @Query("DELETE FROM Coupon AS coup WHERE coup.company.id=:companyId")
     void deleteByCompanyId(long companyId);
 
+    /**
+     * Find all the Coupons in a certain shopping category and they belong to a certain Company.
+     *
+     * @param id       Id of the Company issuing the Coupons.
+     * @param category Shopping category for the Coupons.
+     * @return Set of Coupons of a certain Company that belong to a certain shopping category.
+     */
     @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.category=:category")
     Set<Coupon> findCompanyCouponsByCategory(long id, int category);
 
+    /**
+     * Find all the Coupons that their price is below or equal to a giving price and belong to a certain Company. The
+     * price ceiling is inclusive (less or equal than).
+     *
+     * @param id    Id of the Company issuing the Coupons.
+     * @param price Price ceiling (inclusive), will return all of the Company's Coupons below this price.
+     * @return Set of Coupons of a certain Company that are below a certain price.
+     */
     @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.price<=:price")
     Set<Coupon> findCompanyCouponsLessThan(long id, double price);
 
+    /**
+     * Find all the Coupons that their endDate is before a certain date and they belong to a certain Company. I.e find
+     * all Coupons of a Company that their expiration date is before a giving date.
+     *
+     * @param id   Id of the Company issuing the Coupons.
+     * @param date Date to compare with endDate of a Company's Coupons.
+     * @return Set of Coupons of all the Coupons that belong to a Company that endDate is before date.
+     */
     @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.endDate<:date")
     Set<Coupon> findCompanyCouponsBeforeExpiredDate(long id, Date date);
 
+    /**
+     * Find all the Coupons that their endDate is before today. I.e their expiration date is past due.
+     *
+     * @return Set of Coupons of all expired Coupons.
+     */
     @Query("FROM Coupon AS coup WHERE coup.endDate < current_time()")
     Set<Coupon> findExpiredCoupons();
 

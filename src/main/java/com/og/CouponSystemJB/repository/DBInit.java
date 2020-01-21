@@ -19,7 +19,8 @@ import com.og.CouponSystemJB.entity.User;
 
 /**
  * This class will initialize our SQL DB with data members and will execute as a command line after the program has
- * been compiled and started to run.
+ * been compiled and started to run. This class is used so we can have at least one Admin in the SQL DB when we
+ * initialize this project, after that the Admin can add Companies.
  */
 @Service
 public class DBInit implements CommandLineRunner {
@@ -65,11 +66,13 @@ public class DBInit implements CommandLineRunner {
             Admin adminClient = new Admin("admin", "admin@csjb.com",
                     "1234");
 
-            adminClient.setId(0);
             User admin =
                     new User("admin@csjb.com",
                             "1234",
                             true, true, true, true, adminClient);
+
+            // Set Ids to 0 so hibernate will save them.
+            adminClient.setId(0);
             admin.setId(0);
             this.adminRepository.save(adminClient);
             this.userRepository.save(admin);
