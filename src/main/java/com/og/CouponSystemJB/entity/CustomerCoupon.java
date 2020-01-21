@@ -21,7 +21,7 @@ import com.og.CouponSystemJB.entity.exception.CouponException;
 import com.og.CouponSystemJB.entity.exception.CustomerException;
 
 /**
- * Entity model(Hibernate) for the table "customer_coupon". Represents a Coupon a Customer bought and more relevant
+ * Entity model(Hibernate) for the table "customer_coupon". Represents a Coupon some Customer bought and more relevant
  * information about it. This entity will connect the relation mapping between Customers and Coupon.
  */
 @Entity
@@ -74,6 +74,11 @@ public class CustomerCoupon {
 
         /*-------------------- Object overrides necessary for embeddable Id --------------------*/
 
+        /**
+         * Necessary for CustomerCouponId to become an embeddable Id in the CustomerCoupon entity.
+         *
+         * @return HashCode for CustomerCouponId.
+         */
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -87,6 +92,12 @@ public class CustomerCoupon {
             return result;
         }
 
+        /**
+         * Necessary for CustomerCouponId to become an embeddable Id in the CustomerCoupon entity.
+         *
+         * @param obj Object to check if equal.
+         * @return true if this object and other object are equals.
+         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
@@ -210,11 +221,21 @@ public class CustomerCoupon {
         }
     }
 
+    /**
+     * Return the Coupon class this CustomerCoupon class is holding and mapping to the Customer class.
+     *
+     * @return Coupon that the Customer in this class is mapped to.
+     */
     @JsonProperty
     public Coupon getCoupon() {
         return coupon;
     }
 
+    /**
+     * Set the Coupon class this CustomerCoupon class is holding and mapping to the Customer class.
+     *
+     * @param coupon Coupon class to be Set.
+     */
     @JsonIgnore
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
