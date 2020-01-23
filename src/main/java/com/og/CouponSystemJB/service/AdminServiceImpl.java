@@ -31,6 +31,43 @@ import com.og.CouponSystemJB.service.exception.AdminServiceException;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AdminServiceImpl implements AdminService {
 
+    /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
+
+    /**
+     * User is expired or not.
+     */
+    private static final boolean NOT_EXPIRED = true;
+
+    /**
+     * User is locked or not.
+     */
+    private static final boolean NOT_LOCKED = true;
+
+    /**
+     * User credentials are expired or not.
+     */
+    private static final boolean CREDENTIALS_NOT_EXPIRED = true;
+
+    /**
+     * User is enabled or not.
+     */
+    private static final boolean ENABLED = true;
+
+    /**
+     * Id to save to repositories.
+     */
+    private static final int ID_TO_SAVE = 0;
+
+    /**
+     * Return message if deleting a Company from the DB was successful.
+     */
+    private static final String COMPANY_REMOVED = "Company removed successfully";
+
+    /**
+     * Return message if deleting a Customer from the DB was successful.
+     */
+    private static final String CUSTOMER_REMOVED = "Customer removed successfully";
+
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
     /* Admin Entity model attached and associated to this Service */
@@ -62,25 +99,25 @@ public class AdminServiceImpl implements AdminService {
      */
     public static void CheckValidCompany(Company company) throws AdminServiceException {
         if (null == company) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "null Company ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_COMP);
         }
         if (null == company.getEmail()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "null email ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_EMAIL);
         }
         if (null == company.getPassword()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "null password ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_PASSWORD);
         }
         if (null == company.getName()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "null name ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_COMP_NAME);
         }
         if (company.getEmail().length() < Company.MIN_CHAR) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "email too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.EMAIL_SHORT);
         }
         if (company.getPassword().length() < Company.MIN_CHAR) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "password too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.PASSWORD_SHORT);
         }
         if (company.getName().length() < Company.MIN_CHAR) {
-            throw new AdminServiceException(AdminServiceException.INVALID_COMP + "Company name too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.COMP_NAME_SHORT);
         }
     }
 
@@ -93,31 +130,32 @@ public class AdminServiceImpl implements AdminService {
      */
     public static void CheckValidCustomer(Customer customer) throws AdminServiceException {
         if (null == customer) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "null Customer ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_CUST);
         }
         if (null == customer.getEmail()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "null email ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_EMAIL);
         }
         if (null == customer.getPassword()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "null password ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_PASSWORD);
         }
         if (null == customer.getFirstName()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "null first name ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_FIRST_NAME);
         }
         if (null == customer.getLastName()) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "null last name ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_LAST_NAME);
         }
         if (customer.getEmail().length() < Customer.MIN_CHAR) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "email too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.EMAIL_SHORT);
         }
         if (customer.getPassword().length() < Customer.MIN_CHAR) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "password too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.PASSWORD_SHORT);
         }
         if (customer.getFirstName().length() < Customer.MIN_CHAR_NAME) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "first name too short ");
+            throw new AdminServiceException(
+                    AdminServiceException.INVALID_CUST + AdminServiceException.FIRST_NAME_SHORT);
         }
         if (customer.getLastName().length() < Customer.MIN_CHAR_NAME) {
-            throw new AdminServiceException(AdminServiceException.INVALID_CUST + "last name too short ");
+            throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.LAST_NAME_SHORT);
         }
     }
 
@@ -163,10 +201,10 @@ public class AdminServiceImpl implements AdminService {
      * @param email String email to check if already taken.
      * @throws AdminServiceException if email already taken.
      */
-    private void checkEmailAvailabe(String email) throws AdminServiceException {
+    private void checkEmailAvailable(String email) throws AdminServiceException {
         Optional<User> user = this.userRepository.findByEmail(email);
         if (user.isPresent()) {
-            throw new AdminServiceException("Invalid: email already taken ");
+            throw new AdminServiceException(AdminServiceException.EMAIL_TAKEN);
         }
 
     }
@@ -181,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
     private void checkCompanyName(String name) throws AdminServiceException {
         Optional<Company> company = this.companyRepository.findByName(name);
         if (company.isPresent()) {
-            throw new AdminServiceException("Invalid Company: name already taken ");
+            throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.COMP_NAME_TAKEN);
         }
     }
 
@@ -199,13 +237,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Company addCompany(Company company) throws AdminServiceException, UserException {
         CheckValidCompany(company); // check valid company
-        checkEmailAvailabe(company.getEmail()); // check email available
-        checkCompanyName(company.getName()); // check name available
-        company.setId(0);
+        this.checkEmailAvailable(company.getEmail()); // check email available
+        this.checkCompanyName(company.getName()); // check name available
+        company.setId(ID_TO_SAVE);
         Company save = this.companyRepository.save(company);
-        User user = new User(company.getEmail(), company.getPassword(), true, true,
-                true, true, save);
-        user.setId(0);
+        User user = new User(company.getEmail(), company.getPassword(), NOT_EXPIRED, NOT_LOCKED,
+                CREDENTIALS_NOT_EXPIRED, ENABLED, save);
+        user.setId(ID_TO_SAVE);
         this.userRepository.save(user);
         return this.companyRepository.findById(save.getId()).get();
     }
@@ -222,12 +260,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Customer addCustomer(Customer customer) throws AdminServiceException, UserException {
         CheckValidCustomer(customer);
-        checkEmailAvailabe(customer.getEmail());
-        customer.setId(0);
+        this.checkEmailAvailable(customer.getEmail());
+        customer.setId(ID_TO_SAVE);
         Customer save = this.customerRepository.save(customer);
-        User user = new User(customer.getEmail(), customer.getPassword(), true, true,
-                true, true, save);
-        user.setId(0);
+        User user = new User(customer.getEmail(), customer.getPassword(), NOT_EXPIRED, NOT_LOCKED,
+                CREDENTIALS_NOT_EXPIRED, ENABLED, save);
+        user.setId(ID_TO_SAVE);
         this.userRepository.save(user);
         return this.customerRepository.findById(save.getId()).get();
     }
@@ -308,9 +346,9 @@ public class AdminServiceImpl implements AdminService {
             }
             this.userRepository.deleteByEmail(email); // remove from user
             this.companyRepository.deleteByEmail(email); // remove from company
-            return "Company removed successfully";
+            return COMPANY_REMOVED;
         }
-        throw new AdminServiceException("Company not found");
+        throw new AdminServiceException(AdminServiceException.COMP_NOT_FOUND);
     }
 
     /**
@@ -327,9 +365,9 @@ public class AdminServiceImpl implements AdminService {
             this.customerCouponRepository.deleteAllByCustomerId(customer.get().getId()); // remove customercoupons
             this.userRepository.deleteByEmail(email); // remove from user
             this.customerRepository.deleteByEmail(email); // remove from customer
-            return "Customer removed successfully";
+            return CUSTOMER_REMOVED;
         }
-        throw new AdminServiceException("Customer not found");
+        throw new AdminServiceException(AdminServiceException.CUST_NOT_FOUND);
     }
 }
 

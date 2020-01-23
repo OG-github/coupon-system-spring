@@ -37,6 +37,10 @@ import com.og.CouponSystemJB.service.exception.CompanyServiceException;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CompanyServiceImpl implements CompanyService {
 
+    /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
+
+
+
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
     /* Company Entity model attached and associated to this Service */
