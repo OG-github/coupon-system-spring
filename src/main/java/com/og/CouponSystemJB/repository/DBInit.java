@@ -25,6 +25,50 @@ import com.og.CouponSystemJB.entity.User;
 @Service
 public class DBInit implements CommandLineRunner {
 
+    /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
+
+    /**
+     * Name for initialized admin client name.
+     */
+    private static final String ADMIN_CLIENT_NAME = "admin";
+
+    /**
+     * Email for initialized admin user and client.
+     */
+    private static final String ADMIN_EMAIL = "admin@csjb.com";
+
+    /**
+     * Password for initialized admin user and client.
+     */
+    private static final String ADMIN_PASSWORD = "1234";
+
+    /**
+     * User is expired or not.
+     */
+    private static final boolean NOT_EXPIRED = true;
+
+    /**
+     * User is locked or not.
+     */
+    private static final boolean NOT_LOCKED = true;
+
+    /**
+     * User credentials are expired or not.
+     */
+    private static final boolean CREDENTIALS_NOT_EXPIRED = true;
+
+    /**
+     * User is enabled or not.
+     */
+    private static final boolean ENABLED = true;
+
+    /**
+     * Id to save to repositories.
+     */
+    private static final int ID_TO_SAVE = 0;
+
+    /*----------------- Fields ---------------------------------------------------------------------------------------*/
+
     /**
      * User JPA Repository.
      */
@@ -34,6 +78,8 @@ public class DBInit implements CommandLineRunner {
      * Admin JPA Repository.
      */
     private AdminRepositorySql adminRepository;
+
+    /*----------------- Constructors ---------------------------------------------------------------------------------*/
 
     /**
      * Full Autowired constructor used automatically by Spring.
@@ -48,6 +94,8 @@ public class DBInit implements CommandLineRunner {
         this.adminRepository = adminRepository;
     }
 
+    /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
+
     /**
      * This will execute in the command line after the program has compiled and started. It will add new members to
      * the SQL DB.
@@ -58,22 +106,22 @@ public class DBInit implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // check if user already exists with optional
-        Optional<User> user = this.userRepository.findByEmail("admin@csjb.com");
+        Optional<User> user = this.userRepository.findByEmail(ADMIN_EMAIL);
         if (user.isPresent()) { // found
             return;
         }
         else { // not found, making new user
-            Admin adminClient = new Admin("admin", "admin@csjb.com",
-                    "1234");
+            Admin adminClient = new Admin(ADMIN_CLIENT_NAME, ADMIN_EMAIL,
+                    ADMIN_PASSWORD);
 
             User admin =
-                    new User("admin@csjb.com",
-                            "1234",
-                            true, true, true, true, adminClient);
+                    new User(ADMIN_EMAIL,
+                            ADMIN_PASSWORD,
+                            NOT_EXPIRED, NOT_LOCKED, CREDENTIALS_NOT_EXPIRED, ENABLED, adminClient);
 
             // Set Ids to 0 so hibernate will save them.
-            adminClient.setId(0);
-            admin.setId(0);
+            adminClient.setId(ID_TO_SAVE);
+            admin.setId(ID_TO_SAVE);
             this.adminRepository.save(adminClient);
             this.userRepository.save(admin);
         }

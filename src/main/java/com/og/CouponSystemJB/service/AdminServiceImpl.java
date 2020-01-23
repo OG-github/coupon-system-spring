@@ -36,19 +36,19 @@ public class AdminServiceImpl implements AdminService {
     /* Admin Entity model attached and associated to this Service */
     private Admin admin;
 
-    /* Repository for User Entity */
+    /* SQL repository for User Entity */
     private UserRepositorySql userRepository;
 
-    /* Repository for Company Entity */
+    /* SQL repository for Company Entity */
     private CompanyRepositorySql companyRepository;
 
-    /* Repository for Customer Entity */
+    /* SQL repository for Customer Entity */
     private CustomerRepositorySql customerRepository;
 
-    /* Repository for Coupon Entity */
+    /* SQL repository for Coupon Entity */
     private CouponRepositorySql couponRepository;
 
-    /* Repository for CustomerCoupon Entity */
+    /* SQL repository for CustomerCoupon Entity */
     private CustomerCouponRepositorySql customerCouponRepository;
 
     /*----------------- Static Methods / Functions ----------------------------------------------------------------------*/
