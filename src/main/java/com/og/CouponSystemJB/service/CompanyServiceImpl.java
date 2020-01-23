@@ -65,9 +65,11 @@ public class CompanyServiceImpl implements CompanyService {
     /*----------------- Static Methods / Functions ----------------------------------------------------------------------*/
 
     /**
+     * Static helper function to determine if Coupon is valid or not. The parameters of the Coupon will be checked
+     * and this method will throw a CompanyServiceException with a relevant message if one of them is invalid.
      *
-     * @param coupon
-     * @throws CompanyServiceException
+     * @param coupon Coupon Entity model to check.
+     * @throws CompanyServiceException Thrown if parameters are null or invalid.
      */
     private static void CheckValidCoupon(Coupon coupon) throws CompanyServiceException {
         if (null == coupon) {
@@ -102,6 +104,16 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    /*----------------- Constructors ---------------------------------------------------------------------------------*/
+
+    /**
+     *
+     * @param couponRepository
+     * @param companyRepository
+     * @param customerCouponRepository
+     * @param customerRepository
+     * @param userRepository
+     */
     @Autowired
     public CompanyServiceImpl(CouponRepositorySql couponRepository, CompanyRepositorySql companyRepository,
                               CustomerCouponRepositorySql customerCouponRepository,
