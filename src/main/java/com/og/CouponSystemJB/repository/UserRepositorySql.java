@@ -24,6 +24,9 @@ import com.og.CouponSystemJB.entity.User;
 @Repository
 public interface UserRepositorySql extends JpaRepository<User, Long> {
 
+
+    static final String QUERY_DLT_BY_EMAIL = "DELETE FROM User AS user WHERE user.email=:email";
+
     /**
      * Find a User entity by email (email is unique).
      *
@@ -39,7 +42,7 @@ public interface UserRepositorySql extends JpaRepository<User, Long> {
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM User AS user WHERE user.email=:email")
+    @Query(QUERY_DLT_BY_EMAIL)
     void deleteByEmail(String email);
 
 }

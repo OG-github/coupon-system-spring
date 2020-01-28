@@ -26,6 +26,19 @@ import com.og.CouponSystemJB.service.exception.CompanyServiceException;
  */
 public interface CompanyService extends EntityService {
 
+    /*----------------- Create / Insert -----------------------*/
+
+    /**
+     * Add a new Coupon that this Company is issuing.
+     *
+     * @param coupon Coupon entity of a new Coupon this Company is issuing.
+     * @return The new Coupon this Company is issuing if successful.
+     * @throws CompanyServiceException Thrown if failed to insert to data base or Coupon is invalid.
+     */
+    Coupon addCoupon(Coupon coupon) throws CompanyServiceException;
+
+    /*----------------- Read / Get -----------------------*/
+
     /**
      * Get the Company entity this service is handling in the data base.
      *
@@ -47,23 +60,7 @@ public interface CompanyService extends EntityService {
      */
     Collection<Coupon> findCompanyCoupons();
 
-    /**
-     * Add a new Coupon that this Company is issuing.
-     *
-     * @param coupon Coupon entity of a new Coupon this Company is issuing.
-     * @return The new Coupon this Company is issuing if successful.
-     * @throws CompanyServiceException Thrown if failed to insert to data base or Coupon is invalid.
-     */
-    Coupon addCoupon(Coupon coupon) throws CompanyServiceException;
-
-    /**
-     * Delete a Coupon this Company is issuing by title (unique parameter).
-     *
-     * @param title Title of the Coupon to delete.
-     * @return String message of deletion status.
-     * @throws CompanyServiceException Thrown if failed to delete in DB or title invalid.
-     */
-    String deleteCouponByTitle(String title) throws CompanyServiceException;
+    /*---------------------- Update ---------------------------*/
 
     /**
      * Update a Coupon this Company is issuing. The Coupon parameter must have its fields with the updated values.
@@ -100,6 +97,18 @@ public interface CompanyService extends EntityService {
      * @throws UserException           Thrown if updating the User data base failed.
      */
     Company update(Company company) throws CompanyServiceException, CompanyException, UserException;
+
+
+    /*----------------- Remove / Delete  -----------------------*/
+
+    /**
+     * Delete a Coupon this Company is issuing by title (unique parameter).
+     *
+     * @param title Title of the Coupon to delete.
+     * @return String message of deletion status.
+     * @throws CompanyServiceException Thrown if failed to delete in DB or title invalid.
+     */
+    String deleteCouponByTitle(String title) throws CompanyServiceException;
 
 }
 

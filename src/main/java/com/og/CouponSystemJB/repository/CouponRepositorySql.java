@@ -31,13 +31,35 @@ import com.og.CouponSystemJB.entity.Coupon;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
 
+    /*----------------- Queries String -------------------------------------------------------------------------------*/
+
+    /**
+     * Query String for Hibernate to find a Coupon by title.
+     */
+    String FIND_COUP_BY_TITLE = "FROM Coupon AS coup WHERE coup.title=:title";
+
+    /**
+     * Query String for Hibernate to find a Company's Coupons by Company ID.
+     */
+    String FIND_COMPANYCOUPONS_BY_COMP_ID = "FROM Coupon AS coup WHERE coup.company.id=:id";
+
+    /**
+     * Query String for Hibernate to find a Company's Coupons by Coupon's title. Company is identified by ID.
+     */
+    String FIND_COMPANYCOUPON_BY_COUP_TITLE =
+            "FROM Coupon AS coup WHERE coup.title=:title AND coup.company.id=:companyId";
+
+    /*----------------- Queries --------------------------------------------------------------------------------------*/
+
+    /*----------------- Read / Get ----------------------------*/
+
     /**
      * Find a Coupon entity by title (title is unique).
      *
      * @param title String title of the desired Coupon.
      * @return Optional of Coupon.
      */
-    @Query("FROM Coupon AS coup WHERE coup.title=:title")
+    @Query(FIND_COUP_BY_TITLE)
     Optional<Coupon> findByTitle(String title);
 
     /**
@@ -46,7 +68,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      * @param id long Id of the Company issuing the Coupons.
      * @return Collection of Company Coupons.
      */
-    @Query("FROM Coupon AS coup WHERE coup.company.id=:id")
+    @Query(FIND_COMPANYCOUPONS_BY_COMP_ID)
     Set<Coupon> findCompanyCoupons(long id);
 
     /**
@@ -56,21 +78,11 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      * @param companyId long Id of the Company issuing the Coupon.
      * @return Optional of Coupon.
      */
-    @Query("FROM Coupon AS coup WHERE coup.title=:title AND coup.company.id=:companyId")
+    @Query(FIND_COMPANYCOUPON_BY_COUP_TITLE)
     Optional<Coupon> findCompanyCouponByTitle(String title, long companyId);
 
     /**
-     * Delete all the Coupons a certain Company is issuing by the Company's Id.
-     *
-     * @param companyId long Id of the Company issuing the Coupons.
-     */
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM Coupon AS coup WHERE coup.company.id=:companyId")
-    void deleteByCompanyId(long companyId);
-
-    /**
-     * Find all the Coupons in a certain shopping category and they belong to a certain Company.
+     * Find all the Coupons in a certain shopping category that belong to a certain Company.
      *
      * @param id       Id of the Company issuing the Coupons.
      * @param category Shopping category for the Coupons.
@@ -108,5 +120,17 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      */
     @Query("FROM Coupon AS coup WHERE coup.endDate < current_time()")
     Set<Coupon> findExpiredCoupons();
+
+    /*----------------- Remove / Delete  -----------------------*/
+
+    /**
+     * Delete all the Coupons a certain Company is issuing by the Company's Id.
+     *
+     * @param companyId long Id of the Company issuing the Coupons.
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Coupon AS coup WHERE coup.company.id=:companyId")
+    void deleteByCompanyId(long companyId);
 
 }

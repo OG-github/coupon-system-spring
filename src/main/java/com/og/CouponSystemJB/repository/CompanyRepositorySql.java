@@ -27,6 +27,15 @@ import com.og.CouponSystemJB.entity.Company;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public interface CompanyRepositorySql extends JpaRepository<Company, Long> {
 
+    /*----------------- Queries String -------------------------------------------------------------------------------*/
+
+    /**
+     * Query String for Hibernate to delete a Company by email.
+     */
+    String DLT_COMP_BY_EMAIL = "DELETE FROM Company AS comp WHERE comp.email=:email";
+
+    /*----------------- Queries --------------------------------------------------------------------------------------*/
+
     /**
      * Find a Company entity by email (email is unique).
      *
@@ -50,6 +59,6 @@ public interface CompanyRepositorySql extends JpaRepository<Company, Long> {
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM Company AS comp WHERE comp.email=:email")
+    @Query(DLT_COMP_BY_EMAIL)
     void deleteByEmail(String email);
 }

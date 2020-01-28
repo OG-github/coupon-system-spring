@@ -104,6 +104,26 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    /**
+     *
+     * @param company
+     * @throws CompanyServiceException
+     */
+    private static void CheckValidCompany(Company company) throws CompanyServiceException {
+        if (null == company) {
+            throw new CompanyServiceException("Invalid Company: Company null ");
+        }
+        if (null == company.getName()) {
+            throw new CompanyServiceException("Invalid Company: name null ");
+        }
+        if (null == company.getEmail()) {
+            throw new CompanyServiceException("Invalid Company: email null ");
+        }
+        if (null == company.getPassword()) {
+            throw new CompanyServiceException("Invalid Company: password null ");
+        }
+    }
+
     /*----------------- Constructors ---------------------------------------------------------------------------------*/
 
     /**
@@ -123,21 +143,6 @@ public class CompanyServiceImpl implements CompanyService {
         this.customerCouponRepository = customerCouponRepository;
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
-    }
-
-    private static void CheckValidCompany(Company company) throws CompanyServiceException {
-        if (null == company) {
-            throw new CompanyServiceException("Invalid Company: Company null ");
-        }
-        if (null == company.getName()) {
-            throw new CompanyServiceException("Invalid Company: name null ");
-        }
-        if (null == company.getEmail()) {
-            throw new CompanyServiceException("Invalid Company: email null ");
-        }
-        if (null == company.getPassword()) {
-            throw new CompanyServiceException("Invalid Company: password null ");
-        }
     }
 
     public void setCompany(Company company) throws CompanyException {
