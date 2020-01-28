@@ -27,6 +27,17 @@ import com.og.CouponSystemJB.entity.Customer;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public interface CustomerRepositorySql extends JpaRepository<Customer, Long> {
 
+    /*----------------- Queries String -------------------------------------------------------------------------------*/
+
+    /**
+     * Query String for Hibernate to delete a Customer by a Customer email.
+     */
+    String DLT_BY_EMAIL = "DELETE FROM Customer AS cust WHERE cust.email=:email";
+
+    /*----------------- Queries --------------------------------------------------------------------------------------*/
+
+    /*----------------- Read / Get ----------------------------*/
+
     /**
      * Find a Customer entity by email (email is unique).
      *
@@ -35,6 +46,8 @@ public interface CustomerRepositorySql extends JpaRepository<Customer, Long> {
      */
     Optional<Customer> findByEmail(String email);
 
+    /*----------------- Remove / Delete  -----------------------*/
+
     /**
      * Delete a Customer entity by email (email is unique).
      *
@@ -42,6 +55,6 @@ public interface CustomerRepositorySql extends JpaRepository<Customer, Long> {
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM Customer AS cust WHERE cust.email=:email")
+    @Query(DLT_BY_EMAIL)
     void deleteByEmail(String email);
 }

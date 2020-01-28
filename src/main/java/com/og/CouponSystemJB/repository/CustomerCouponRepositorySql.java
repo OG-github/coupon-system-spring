@@ -31,23 +31,23 @@ public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupo
     /*----------------- Queries String -------------------------------------------------------------------------------*/
 
     /**
-     *
+     * Query String for Hibernate to find a CustomerCoupon by Customer ID and Coupon ID.
      */
     String FIND_BY_CUST_ID_AND_COUP_ID =
             "FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId AND custcoup.coupon.id=:couponId";
 
     /**
-     *
+     * Query String for Hibernate to find all CustomerCoupons by a Customer ID.
      */
     String FIND_ALL_BY_CUST_ID = "FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId";
 
     /**
-     *
+     * Query String for Hibernate to delete all CustomerCoupons by a Coupon ID.
      */
     String DLT_ALL_BY_COUP_ID = "DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.coupon.id=:couponId";
 
     /**
-     *
+     * Query String for Hibernate to delete all CustomerCoupons by a Customer ID.
      */
     String DLT_ALL_BY_CUST_ID = "DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId";
 

@@ -24,8 +24,16 @@ import com.og.CouponSystemJB.entity.User;
 @Repository
 public interface UserRepositorySql extends JpaRepository<User, Long> {
 
+    /*----------------- Queries String -------------------------------------------------------------------------------*/
 
-    static final String QUERY_DLT_BY_EMAIL = "DELETE FROM User AS user WHERE user.email=:email";
+    /**
+     * Query String for Hibernate to delete a User by a User email.
+     */
+    String DLT_BY_EMAIL = "DELETE FROM User AS user WHERE user.email=:email";
+
+    /*----------------- Queries --------------------------------------------------------------------------------------*/
+
+    /*----------------- Read / Get ----------------------------*/
 
     /**
      * Find a User entity by email (email is unique).
@@ -35,6 +43,8 @@ public interface UserRepositorySql extends JpaRepository<User, Long> {
      */
     public Optional<User> findByEmail(String email);
 
+    /*----------------- Remove / Delete  -----------------------*/
+
     /**
      * Delete a User entity by email (email is unique).
      *
@@ -42,7 +52,7 @@ public interface UserRepositorySql extends JpaRepository<User, Long> {
      */
     @Transactional
     @Modifying
-    @Query(QUERY_DLT_BY_EMAIL)
+    @Query(DLT_BY_EMAIL)
     void deleteByEmail(String email);
 
 }
