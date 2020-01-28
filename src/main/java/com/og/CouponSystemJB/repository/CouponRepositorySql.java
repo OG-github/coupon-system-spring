@@ -49,6 +49,35 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
     String FIND_COMPANYCOUPON_BY_COUP_TITLE =
             "FROM Coupon AS coup WHERE coup.title=:title AND coup.company.id=:companyId";
 
+    /**
+     * Query String for Hibernate to find a Company's Coupons by Coupons' category. Company is identified by ID.
+     */
+    String FIND_COMPANYCOUPONS_BY_COUP_CATEGORY =
+            "FROM Coupon AS coup WHERE coup.company.id=:id AND coup.category=:category";
+
+    /**
+     * Query String for Hibernate to find a Company's Coupons by an inclusive price ceiling. Company is identified by
+     * ID.
+     */
+    String FIND_COMPANYCOUPONS_BY_BELOW_PRICE = "FROM Coupon AS coup WHERE coup.company.id=:id AND coup.price<=:price";
+
+    /**
+     * Query String for Hibernate to find a Company's Coupons where Coupon's expiration date (endDate) is before date.
+     * Company is identified by ID.
+     */
+    String FIND_COMPANYCOUPONS_BEFORE_EXP_DATE = "FROM Coupon AS coup WHERE coup.company.id=:id AND coup.endDate<:date";
+
+    /**
+     * Query String for Hibernate to find all Coupons that their endDate has expired, i.e. Coupons that their
+     * expiration date has expired.
+     */
+    String FIND_COUPONS_BEFORE_EXP_DATE = "FROM Coupon AS coup WHERE coup.endDate < current_time()";
+
+    /**
+     * Query String for Hibernate to delete all Coupons that belong to a certain Company. Company is identified by ID.
+     */
+    String DLT_COUPONS_BY_COMP_ID = "DELETE FROM Coupon AS coup WHERE coup.company.id=:companyId";
+
     /*----------------- Queries --------------------------------------------------------------------------------------*/
 
     /*----------------- Read / Get ----------------------------*/
@@ -88,7 +117,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      * @param category Shopping category for the Coupons.
      * @return Set of Coupons of a certain Company that belong to a certain shopping category.
      */
-    @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.category=:category")
+    @Query(FIND_COMPANYCOUPONS_BY_COUP_CATEGORY)
     Set<Coupon> findCompanyCouponsByCategory(long id, int category);
 
     /**
@@ -99,7 +128,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      * @param price Price ceiling (inclusive), will return all of the Company's Coupons below this price.
      * @return Set of Coupons of a certain Company that are below a certain price.
      */
-    @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.price<=:price")
+    @Query(FIND_COMPANYCOUPONS_BY_BELOW_PRICE)
     Set<Coupon> findCompanyCouponsLessThan(long id, double price);
 
     /**
@@ -110,7 +139,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      * @param date Date to compare with endDate of a Company's Coupons.
      * @return Set of Coupons of all the Coupons that belong to a Company that endDate is before date.
      */
-    @Query("FROM Coupon AS coup WHERE coup.company.id=:id AND coup.endDate<:date")
+    @Query(FIND_COMPANYCOUPONS_BEFORE_EXP_DATE)
     Set<Coupon> findCompanyCouponsBeforeExpiredDate(long id, Date date);
 
     /**
@@ -118,7 +147,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      *
      * @return Set of Coupons of all expired Coupons.
      */
-    @Query("FROM Coupon AS coup WHERE coup.endDate < current_time()")
+    @Query(FIND_COUPONS_BEFORE_EXP_DATE)
     Set<Coupon> findExpiredCoupons();
 
     /*----------------- Remove / Delete  -----------------------*/
@@ -130,7 +159,7 @@ public interface CouponRepositorySql extends JpaRepository<Coupon, Long> {
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM Coupon AS coup WHERE coup.company.id=:companyId")
+    @Query(DLT_COUPONS_BY_COMP_ID)
     void deleteByCompanyId(long companyId);
 
 }

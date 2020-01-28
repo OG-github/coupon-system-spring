@@ -28,6 +28,34 @@ import com.og.CouponSystemJB.entity.CustomerCoupon;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupon, Long> {
 
+    /*----------------- Queries String -------------------------------------------------------------------------------*/
+
+    /**
+     *
+     */
+    String FIND_BY_CUST_ID_AND_COUP_ID =
+            "FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId AND custcoup.coupon.id=:couponId";
+
+    /**
+     *
+     */
+    String FIND_ALL_BY_CUST_ID = "FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId";
+
+    /**
+     *
+     */
+    String DLT_ALL_BY_COUP_ID = "DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.coupon.id=:couponId";
+
+    /**
+     *
+     */
+    String DLT_ALL_BY_CUST_ID = "DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId";
+
+
+    /*----------------- Queries --------------------------------------------------------------------------------------*/
+
+    /*----------------- Read / Get ----------------------------*/
+
     /**
      * Find CustomerCoupon based on Customer Id and Coupon Id.
      *
@@ -35,7 +63,7 @@ public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupo
      * @param couponId   Coupon Id.
      * @return Optional of CustomerCoupon.
      */
-    @Query("FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId AND custcoup.coupon.id=:couponId")
+    @Query(FIND_BY_CUST_ID_AND_COUP_ID)
     Optional<CustomerCoupon> findByCustomerIdAndCouponId(long customerId,
                                                          long couponId);
 
@@ -45,8 +73,10 @@ public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupo
      * @param customerId Id of the Customer owning the Coupons.
      * @return Collection of CustomerCoupon representing all the Coupons the Customer owns.
      */
-    @Query("FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId")
+    @Query(FIND_ALL_BY_CUST_ID)
     Collection<CustomerCoupon> findByCustomerId(long customerId);
+
+    /*----------------- Remove / Delete  -----------------------*/
 
     /**
      * Delete all CustomerCoupons that belong to a Certain Coupon based on Coupon Id.
@@ -55,7 +85,7 @@ public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupo
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.coupon.id=:couponId")
+    @Query(DLT_ALL_BY_COUP_ID)
     void deleteAllByCouponId(long couponId);
 
     /**
@@ -65,6 +95,6 @@ public interface CustomerCouponRepositorySql extends JpaRepository<CustomerCoupo
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM CustomerCoupon AS custcoup WHERE custcoup.customer.id=:customerId")
+    @Query(DLT_ALL_BY_CUST_ID)
     void deleteAllByCustomerId(long customerId);
 }
