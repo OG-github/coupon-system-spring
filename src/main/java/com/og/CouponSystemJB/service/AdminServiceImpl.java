@@ -186,7 +186,7 @@ public class AdminServiceImpl implements AdminService {
     /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
 
     /**
-     * Setter for the Admin Entity model this Service holds and is responsible for.
+     * (For LoginService) Setter for the Admin Entity model this Service holds and is responsible for.
      *
      * @param admin Admin Entity model.
      */

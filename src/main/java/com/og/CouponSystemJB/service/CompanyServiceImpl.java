@@ -65,6 +65,28 @@ public class CompanyServiceImpl implements CompanyService {
     /*----------------- Static Methods / Functions ----------------------------------------------------------------------*/
 
     /**
+     * Static helper function to determine if Company is valid or not. The parameters of the Company will be checked
+     * and this method will throw a CompanyServiceException with a relevant message if one of them is invalid.
+     *
+     * @param company Company Entity model to check.
+     * @throws CompanyServiceException Thrown if parameters are null or invalid.
+     */
+    private static void CheckValidCompany(Company company) throws CompanyServiceException {
+        if (null == company) {
+            throw new CompanyServiceException("Invalid Company: Company null ");
+        }
+        if (null == company.getName()) {
+            throw new CompanyServiceException("Invalid Company: name null ");
+        }
+        if (null == company.getEmail()) {
+            throw new CompanyServiceException("Invalid Company: email null ");
+        }
+        if (null == company.getPassword()) {
+            throw new CompanyServiceException("Invalid Company: password null ");
+        }
+    }
+
+    /**
      * Static helper function to determine if Coupon is valid or not. The parameters of the Coupon will be checked
      * and this method will throw a CompanyServiceException with a relevant message if one of them is invalid.
      *
@@ -104,35 +126,16 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-    /**
-     *
-     * @param company
-     * @throws CompanyServiceException
-     */
-    private static void CheckValidCompany(Company company) throws CompanyServiceException {
-        if (null == company) {
-            throw new CompanyServiceException("Invalid Company: Company null ");
-        }
-        if (null == company.getName()) {
-            throw new CompanyServiceException("Invalid Company: name null ");
-        }
-        if (null == company.getEmail()) {
-            throw new CompanyServiceException("Invalid Company: email null ");
-        }
-        if (null == company.getPassword()) {
-            throw new CompanyServiceException("Invalid Company: password null ");
-        }
-    }
-
     /*----------------- Constructors ---------------------------------------------------------------------------------*/
 
     /**
+     * Full Autowired constructor used automatically by Spring.
      *
-     * @param couponRepository
-     * @param companyRepository
-     * @param customerCouponRepository
-     * @param customerRepository
-     * @param userRepository
+     * @param couponRepository         JPA Repository for Coupon (Autowired).
+     * @param companyRepository        JPA Repository for Company (Autowired).
+     * @param customerCouponRepository JPA Repository for CustomerCoupon (Autowired).
+     * @param customerRepository       JPA Repository for Customer (Autowired).
+     * @param userRepository           JPA Repository for User (Autowired).
      */
     @Autowired
     public CompanyServiceImpl(CouponRepositorySql couponRepository, CompanyRepositorySql companyRepository,
@@ -145,6 +148,15 @@ public class CompanyServiceImpl implements CompanyService {
         this.userRepository = userRepository;
     }
 
+
+    /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
+
+    /**
+     * (For LoginService) Setter for the Company Entity model this Service holds and is responsible for.
+     *
+     * @param company Company Entity model.
+     * @throws CompanyException Thrown if setting CompanyCoupons failed.
+     */
     public void setCompany(Company company) throws CompanyException {
         Set<Coupon> companyCoupons = this.couponRepository.findCompanyCoupons(company.getId());
         if (null != companyCoupons && !companyCoupons.isEmpty()) {
@@ -153,23 +165,10 @@ public class CompanyServiceImpl implements CompanyService {
         this.company = company;
     }
 
-
-    @Override
-    public Company getCompany() {
-        return this.company;
-    }
-
-    @Override
-    public Collection<Coupon> findAllCoupons() {
-        return this.couponRepository.findAll();
-    }
-
-    @Override
-    public Collection<Coupon> findCompanyCoupons() {
-        return this.couponRepository.findCompanyCoupons(this.company.getId());
-    }
-
-
+    /**
+     * @param title
+     * @throws CompanyServiceException
+     */
     private void checkAvailableCouponTitle(String title) throws CompanyServiceException {
         Collection<Coupon> coupons = this.couponRepository.findAll();
         for (Coupon coupon : coupons) {
@@ -179,6 +178,55 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    /**
+     * @param coupon
+     * @throws CompanyServiceException
+     * @throws CouponException
+     */
+    private void checkUpdateCoupon(Coupon coupon) throws CompanyServiceException, CouponException {
+        // if coupon exists
+        Optional<Coupon> couponByTitle = this.couponRepository.findCompanyCouponByTitle(coupon.getTitle(),
+                this.company.getId());
+        if (!couponByTitle.isPresent()) {
+            throw new CompanyServiceException("Update Coupon failed: Coupon not found ");
+        }
+        coupon.setId(couponByTitle.get().getId());
+        coupon.setCompany(this.company);
+    }
+
+    /**
+     * @param company
+     * @throws CompanyServiceException
+     */
+    private void checkUpdateCompany(Company company) throws CompanyServiceException {
+        if (!company.getEmail().equals(this.company.getEmail())) {
+            throw new CompanyServiceException("Update Company fail: Can not change email ");
+
+        }
+        if (company.getName().length() < Company.MIN_CHAR) {
+            throw new CompanyServiceException("Update Company fail: New name is too short ");
+
+        }
+        if (!company.getName().equals(this.company.getName())) { // name changed
+            Optional<Company> companyRepo = this.companyRepository.findByName(company.getName());
+            if (companyRepo.isPresent()) { // name already taken
+                throw new CompanyServiceException("Invalid Company: name already taken ");
+            }
+        }
+        if (company.getPassword().length() < Company.MIN_CHAR) {
+            throw new CompanyServiceException("Update Company fail: New password is too short ");
+
+        }
+        company.setId(this.company.getId());
+    }
+
+    /*----------------- Create / Insert -----------------------*/
+
+    /**
+     * @param coupon Coupon entity of a new Coupon this Company is issuing.
+     * @return
+     * @throws CompanyServiceException
+     */
     @Override
     public Coupon addCoupon(Coupon coupon) throws CompanyServiceException {
         CheckValidCoupon(coupon);
@@ -196,32 +244,34 @@ public class CompanyServiceImpl implements CompanyService {
         }
         return this.couponRepository.save(coupon);
     }
+    /*----------------- Read / Get -----------------------*/
 
+    /**
+     * @return
+     */
     @Override
-    public String deleteCouponByTitle(String title) throws CompanyServiceException {
-        Collection<Coupon> companyCoupons = this.company.getCoupons();
-        for (Coupon coupon : companyCoupons) {
-            if (coupon.getTitle().equals(title)) {
-                this.company.getCoupons().remove(coupon);
-                this.companyRepository.save(this.company);
-                this.couponRepository.delete(coupon);
-                this.customerCouponRepository.deleteAllByCouponId(coupon.getId());
-                return "Coupon deleted successfully";
-            }
-        }
-        throw new CompanyServiceException("Delete failed: Coupon not found ");
+    public Company getCompany() {
+        return this.company;
     }
 
-    private void checkUpdateCoupon(Coupon coupon) throws CompanyServiceException, CouponException {
-        // if coupon exists
-        Optional<Coupon> couponByTitle = this.couponRepository.findCompanyCouponByTitle(coupon.getTitle(),
-                this.company.getId());
-        if (!couponByTitle.isPresent()) {
-            throw new CompanyServiceException("Update Coupon failed: Coupon not found ");
-        }
-        coupon.setId(couponByTitle.get().getId());
-        coupon.setCompany(this.company);
+    /**
+     * @return
+     */
+    @Override
+    public Collection<Coupon> findAllCoupons() {
+        return this.couponRepository.findAll();
     }
+
+    /**
+     * @return
+     */
+    @Override
+    public Collection<Coupon> findCompanyCoupons() {
+        return this.couponRepository.findCompanyCoupons(this.company.getId());
+    }
+
+    /*---------------------- Update ---------------------------*/
+
 
     @Override
     public Coupon updateCoupon(Coupon coupon) throws CompanyServiceException, CouponException, CompanyException {
@@ -263,27 +313,6 @@ public class CompanyServiceImpl implements CompanyService {
         return "Coupon used successfully";
     }
 
-    private void checkUpdateCompany(Company company) throws CompanyServiceException {
-        if (!company.getEmail().equals(this.company.getEmail())) {
-            throw new CompanyServiceException("Update Company fail: Can not change email ");
-
-        }
-        if (company.getName().length() < Company.MIN_CHAR) {
-            throw new CompanyServiceException("Update Company fail: New name is too short ");
-
-        }
-        if (!company.getName().equals(this.company.getName())) { // name changed
-            Optional<Company> companyRepo = this.companyRepository.findByName(company.getName());
-            if (companyRepo.isPresent()) { // name already taken
-                throw new CompanyServiceException("Invalid Company: name already taken ");
-            }
-        }
-        if (company.getPassword().length() < Company.MIN_CHAR) {
-            throw new CompanyServiceException("Update Company fail: New password is too short ");
-
-        }
-        company.setId(this.company.getId());
-    }
 
     @Override
     public Company update(Company company) throws CompanyServiceException, CompanyException, UserException {
@@ -300,6 +329,28 @@ public class CompanyServiceImpl implements CompanyService {
         user.get().setPassword();
         this.userRepository.save(user.get());
         return this.companyRepository.save(this.company);
+    }
+
+    /*----------------- Remove / Delete  -----------------------*/
+
+    /**
+     * @param title Title of the Coupon to delete.
+     * @return
+     * @throws CompanyServiceException
+     */
+    @Override
+    public String deleteCouponByTitle(String title) throws CompanyServiceException {
+        Collection<Coupon> companyCoupons = this.company.getCoupons();
+        for (Coupon coupon : companyCoupons) {
+            if (coupon.getTitle().equals(title)) {
+                this.company.getCoupons().remove(coupon);
+                this.companyRepository.save(this.company);
+                this.couponRepository.delete(coupon);
+                this.customerCouponRepository.deleteAllByCouponId(coupon.getId());
+                return "Coupon deleted successfully";
+            }
+        }
+        throw new CompanyServiceException("Delete failed: Coupon not found ");
     }
 }
 

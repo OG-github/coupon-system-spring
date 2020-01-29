@@ -1,5 +1,8 @@
 package com.og.CouponSystemJB.service.exception;
 
+/**
+ * This will represent Exceptions that are related to the AdminServices.
+ */
 public class AdminServiceException extends Exception {
 
     /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/

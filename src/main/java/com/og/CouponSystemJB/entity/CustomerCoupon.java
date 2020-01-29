@@ -84,10 +84,10 @@ public class CustomerCoupon {
             final int prime = 31;
             int result = 1;
             result = prime * result
-                    + ((this.couponId == null) ? 0 : this.couponId.hashCode());
+                    + ((null == this.couponId) ? 0 : this.couponId.hashCode());
 
             result = prime * result
-                    + ((this.customerId == null) ? 0 : this.customerId.hashCode());
+                    + ((null == this.customerId) ? 0 : this.customerId.hashCode());
 
             return result;
         }
@@ -102,22 +102,22 @@ public class CustomerCoupon {
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
-            if (obj == null)
+            if (null == obj)
                 return false;
             if (getClass() != obj.getClass())
                 return false;
 
             CustomerCouponId other = (CustomerCouponId) obj;
 
-            if (this.couponId == null) {
-                if (other.couponId != null)
+            if (null == this.couponId) {
+                if (null != other.couponId)
                     return false;
             }
             else if (!this.couponId.equals(other.couponId))
                 return false;
 
-            if (this.customerId == null) {
-                if (other.customerId != null)
+            if (null == this.customerId) {
+                if (null != other.customerId)
                     return false;
             }
             else if (!this.customerId.equals(other.customerId))
