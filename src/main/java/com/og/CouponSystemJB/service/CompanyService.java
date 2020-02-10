@@ -63,7 +63,7 @@ public interface CompanyService extends EntityService {
     /*---------------------- Update ---------------------------*/
 
     /**
-     * Update a Coupon this Company is issuing. The Coupon parameter must have its fields with the updated values.
+     * Update a Coupon this Company is issuing. The Coupon's parameters must have its fields with the updated values.
      *
      * @param coupon Coupon entity with the updated field values.
      * @return The updated Coupon with the new values.
@@ -74,7 +74,7 @@ public interface CompanyService extends EntityService {
     Coupon updateCoupon(Coupon coupon) throws CompanyServiceException, CouponException, CompanyException;
 
     /**
-     * Let a Customer entity use a Coupon. Customer will be identified by email and Coupon by title(unique
+     * Let a Customer entity use a Coupon. Customer will be identified by email and Coupon by title (unique
      * parameters). Using the Coupon will reduce the amount of Coupons the Customer has by 1.
      *
      * @param couponTitle   String title of the Coupon the Customer wants to use.

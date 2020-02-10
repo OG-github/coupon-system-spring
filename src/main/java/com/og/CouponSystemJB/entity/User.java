@@ -184,7 +184,8 @@ public class User {
     /*-------------------- Email --------------------*/
 
     /**
-     * Getter for User's email.
+     * Getter for User's email. The Getter will always set the email in User by the email that is saved in the Client
+     * so they will always share the same email. Also will be less prone to tempering.
      *
      * @return String email of the User.
      */
@@ -194,7 +195,8 @@ public class User {
     }
 
     /**
-     * Setter for Client's email. (MIN_CHAR).
+     * Setter for Client's email. (MIN_CHAR). The Setter will always set the email in User by the email that is saved
+     * in the Client so they will always share the same email. Also will be less prone to tempering.
      */
     public void setEmail() {
         this.email = this.client.getEmail();
@@ -203,7 +205,8 @@ public class User {
     /*-------------------- Password --------------------*/
 
     /**
-     * Getter for User's password.
+     * Getter for User's password. The Getter will always set the password in User by the password that is
+     * saved in the Client so they will always share the same password. Also will be less prone to tempering.
      *
      * @return String password of the User.
      */
@@ -213,10 +216,10 @@ public class User {
     }
 
     /**
-     * Setter for User's password. (MIN_CHAR).
-     *
+     * Setter for User's password. (MIN_CHAR). The Setter will always set the password in User by the password that is
+     * saved in the Client so they will always share the same password. Also will be less prone to tempering.
      */
-    public void setPassword()  {
+    public void setPassword() {
         this.password = this.client.getPassword();
     }
 
@@ -228,7 +231,7 @@ public class User {
      * @return Client this User represents from one of the corresponding tables.
      */
     public Client getClient() {
-        return client;
+        return this.client;
     }
 
     /**
@@ -242,6 +245,9 @@ public class User {
             throw new UserException(UserException.MSG_Client + UserException.MSG_NULL_PARAM);
         }
         this.client = client;
+        // update email and password for new client
+        this.email = this.client.getEmail();
+        this.password = this.client.getPassword();
     }
 
     /*-------------------- Not Expired --------------------*/
@@ -317,6 +323,7 @@ public class User {
 
     /**
      * Setter for is User account enabled.
+     *
      * @param enabled boolean true if User account enabled.
      */
     public void setEnabled(boolean enabled) {

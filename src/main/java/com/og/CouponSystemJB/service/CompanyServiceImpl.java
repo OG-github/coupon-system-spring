@@ -39,7 +39,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
 
-
+    /* Represents no Coupons left for a Customer to use. */
+    private static final int NO_COUPON_LEFT_AMOUNT = 0;
 
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
@@ -195,12 +196,13 @@ public class CompanyServiceImpl implements CompanyService {
      * @throws CouponException         Will be thrown if failed to change entity Coupon.
      */
     private void checkUpdateCoupon(Coupon coupon) throws CompanyServiceException, CouponException {
-        // if coupon exists
+        // if coupon exists in only this Company's Coupons
         Optional<Coupon> couponByTitle = this.couponRepository.findCompanyCouponByTitle(coupon.getTitle(),
                 this.company.getId());
         if (!couponByTitle.isPresent()) {
             throw new CompanyServiceException("Update Coupon failed: Coupon not found ");
         }
+        // id is not sent in update must be set here
         coupon.setId(couponByTitle.get().getId());
         coupon.setCompany(this.company);
     }
@@ -301,62 +303,98 @@ public class CompanyServiceImpl implements CompanyService {
 
     /*---------------------- Update ---------------------------*/
 
-
+    /**
+     * Update a Coupon this Company is issuing in the DB. The Coupon's parameters must have its fields with the
+     * updated values.
+     *
+     * @param coupon Coupon entity with the updated field values.
+     * @return The updated Coupon entity with the new values.
+     * @throws CompanyServiceException Thrown if Coupon or one of its values invalid.
+     * @throws CouponException         Thrown if updating Coupon in Coupon DB failed.
+     * @throws CompanyException        Thrown if updating Company in Company DB failed.
+     */
     @Override
     public Coupon updateCoupon(Coupon coupon) throws CompanyServiceException, CouponException, CompanyException {
-        CheckValidCoupon(coupon);
-        this.checkUpdateCoupon(coupon);
+        CheckValidCoupon(coupon); // check valid Coupon
+        this.checkUpdateCoupon(coupon); // check Coupon title belongs to this Company and exists
         Coupon savedCoupon = this.couponRepository.save(coupon);
         this.company.setCoupons(this.findCompanyCoupons());
         return savedCoupon;
     }
 
 
+    /**
+     * Let a Customer entity use a Coupon. Customer will be identified by email and Coupon by title (unique
+     * parameters). Using the Coupon will reduce the amount of Coupons the Customer has by 1.
+     *
+     * @param couponTitle   String title of the Coupon the Customer wants to use.
+     * @param customerEmail String email of the Customer using the Coupon.
+     * @return String message of update status.
+     * @throws CompanyServiceException Thrown if updating failed or Customer or Customer's email is invalid.
+     * @throws CouponException         Thrown if Coupon title or Coupon is invalid.
+     */
     @Override
     public String useCoupon(String couponTitle, String customerEmail) throws CompanyServiceException, CouponException {
+        // check nulls
         if (null == couponTitle) {
             throw new CompanyServiceException("Use Coupon failed: Coupon title null ");
         }
         if (null == customerEmail) {
             throw new CompanyServiceException("Use Coupon failed: Customer email null ");
         }
+        // find customer and find coupon
         Optional<Coupon> coupon = this.couponRepository.findByTitle(couponTitle);
         Optional<Customer> customer = this.customerRepository.findByEmail(customerEmail);
+        // check if found
         if (!coupon.isPresent()) {
             throw new CompanyServiceException("Use Coupon failed: Coupon not found ");
         }
         if (!customer.isPresent()) {
             throw new CompanyServiceException("Use Coupon failed: Customer not found ");
         }
+        // check if customer owns this coupon
         Optional<CustomerCoupon> customerCoupon =
                 this.customerCouponRepository.findByCustomerIdAndCouponId(customer.get().getId(), coupon.get().getId());
         if (!customerCoupon.isPresent()) {
             throw new CompanyServiceException("Use Coupon failed: Customer dose not own this Coupon ");
         }
-        if (customerCoupon.get().getAmount() <= 0) {
+        // check if amount left to use by customer
+        if (customerCoupon.get().getAmount() <= NO_COUPON_LEFT_AMOUNT) {
             this.customerCouponRepository.delete(customerCoupon.get());
             throw new CompanyServiceException("Use Coupon failed: Customer dose not have enough Coupons ");
         }
-        customerCoupon.get().useCoupon();
+        customerCoupon.get().useCoupon(); // reduce by 1
         this.customerCouponRepository.save(customerCoupon.get());
         return "Coupon used successfully";
     }
 
 
+    /**
+     * Update the Company this service is handling in the DB. The Company will be updated by the Company argument and
+     * its fields.
+     *
+     * @param company Company entity with the updated field values.
+     * @return The updated Company entity with the new values.
+     * @throws CompanyServiceException Thrown if updating failed or Company is invalid or with invalid fields.
+     * @throws CompanyException        Thrown if updating the Company data base failed or Company is invalid or with
+     *                                 invalid fields.
+     * @throws UserException           Thrown if updating the User data base failed.
+     */
     @Override
     public Company update(Company company) throws CompanyServiceException, CompanyException, UserException {
-        CheckValidCompany(company);
-        checkUpdateCompany(company);
+        CheckValidCompany(company); // check valid Company parameters
+        checkUpdateCompany(company); // check email not changed, and parameters not too short
         company.setCoupons(this.company.getCoupons());
+        // update local instance here in Service
         this.company = company;
         Optional<User> user = this.userRepository.findByEmail(this.company.getEmail());
         if (!user.isPresent()) {
             throw new CompanyServiceException("Update Company failed: Update User info failed. ");
         }
+        // update the User in DB
         user.get().setClient(this.company);
-        user.get().setEmail();
-        user.get().setPassword();
         this.userRepository.save(user.get());
+        // update the Company in DB
         return this.companyRepository.save(this.company);
     }
 
