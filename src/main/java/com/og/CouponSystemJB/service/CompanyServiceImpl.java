@@ -61,6 +61,11 @@ public class CompanyServiceImpl implements CompanyService {
     /* SQL repository for CustomerCoupon Entity */
     private CustomerCouponRepositorySql customerCouponRepository;
 
+    /**
+     * Id to save to repositories.
+     */
+    private static final int ID_TO_SAVE = 0;
+
 
     /*----------------- Static Methods / Functions ----------------------------------------------------------------------*/
 
@@ -166,8 +171,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * @param title
-     * @throws CompanyServiceException
+     * Helper function to determine if a Coupon's title is already taken or not. Will throw CompanyServiceException if
+     * title was found to another Coupon.
+     *
+     * @param title String title of the new Coupon
+     * @throws CompanyServiceException Will be thrown if title already taken.
      */
     private void checkAvailableCouponTitle(String title) throws CompanyServiceException {
         Collection<Coupon> coupons = this.couponRepository.findAll();
@@ -179,9 +187,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * @param coupon
-     * @throws CompanyServiceException
-     * @throws CouponException
+     * Helper function to determine if a Coupon to be updated is found in the DB by its title (unique parameter). If
+     * the Coupon is not found CompanyServiceException will be thrown.
+     *
+     * @param coupon Coupon entity of an updated Coupon this Company is issuing.
+     * @throws CompanyServiceException Will be thrown if title is not found.
+     * @throws CouponException         Will be thrown if failed to change entity Coupon.
      */
     private void checkUpdateCoupon(Coupon coupon) throws CompanyServiceException, CouponException {
         // if coupon exists
@@ -195,24 +206,32 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * @param company
-     * @throws CompanyServiceException
+     * Helper function to determine if a Company to be updated has valid parameters before entering the DB. This
+     * function will check if the email has not been changed, if the new name is not too short or is already taken by
+     * another Company and if the new password is not too short.
+     *
+     * @param company Company entity with the updated parameters.
+     * @throws CompanyServiceException Will be thrown if one of the parameters is invalid.
      */
     private void checkUpdateCompany(Company company) throws CompanyServiceException {
+        // check if email changed
         if (!company.getEmail().equals(this.company.getEmail())) {
             throw new CompanyServiceException("Update Company fail: Can not change email ");
 
         }
+        // check if new name is too short
         if (company.getName().length() < Company.MIN_CHAR) {
             throw new CompanyServiceException("Update Company fail: New name is too short ");
 
         }
-        if (!company.getName().equals(this.company.getName())) { // name changed
+        // name changed so check if new name is already taken
+        if (!company.getName().equals(this.company.getName())) {
             Optional<Company> companyRepo = this.companyRepository.findByName(company.getName());
             if (companyRepo.isPresent()) { // name already taken
                 throw new CompanyServiceException("Invalid Company: name already taken ");
             }
         }
+        // check if password too short
         if (company.getPassword().length() < Company.MIN_CHAR) {
             throw new CompanyServiceException("Update Company fail: New password is too short ");
 
@@ -223,15 +242,17 @@ public class CompanyServiceImpl implements CompanyService {
     /*----------------- Create / Insert -----------------------*/
 
     /**
+     * Add a new Coupon into the DB from this Company. Coupon must have unique title and belong only to 1 Company.
+     *
      * @param coupon Coupon entity of a new Coupon this Company is issuing.
-     * @return
-     * @throws CompanyServiceException
+     * @return Coupon entity of a new Coupon this Company is issuing.
+     * @throws CompanyServiceException Will be thrown if adding to the DB failed.
      */
     @Override
     public Coupon addCoupon(Coupon coupon) throws CompanyServiceException {
-        CheckValidCoupon(coupon);
-        this.checkAvailableCouponTitle(coupon.getTitle());
-        coupon.setId(0);
+        CheckValidCoupon(coupon);  // check valid Coupon
+        this.checkAvailableCouponTitle(coupon.getTitle());  // check title available
+        coupon.setId(ID_TO_SAVE); // set id to 0 to save in DB
         try {
             coupon.setCompany(this.company);
             this.company.add(coupon);
@@ -247,7 +268,10 @@ public class CompanyServiceImpl implements CompanyService {
     /*----------------- Read / Get -----------------------*/
 
     /**
-     * @return
+     * Getter for the Company entity that this Service is handling. The Company entity's parameters will represent
+     * data from the SQL DB.
+     *
+     * @return Company entity for this Service.
      */
     @Override
     public Company getCompany() {
@@ -255,7 +279,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * @return
+     * Find all Coupon Entities from the DB. Each Coupon hold data from the SQL DB in its field members.
+     *
+     * @return Collection of Coupon Entities from SQL DB.
      */
     @Override
     public Collection<Coupon> findAllCoupons() {
@@ -263,7 +289,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * @return
+     * Find all Coupon Entities from the DB that are issued by this Company. Each Coupon hold data from the SQL DB in
+     * its field members.
+     *
+     * @return Collection of Coupon Entities of this Company from SQL DB.
      */
     @Override
     public Collection<Coupon> findCompanyCoupons() {

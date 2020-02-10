@@ -214,7 +214,7 @@ public class AdminServiceImpl implements AdminService {
      * name was found to another Company.
      *
      * @param name String name to check for a Company.
-     * @throws AdminServiceException if name already taken.
+     * @throws AdminServiceException Will be thrown if name already taken.
      */
     private void checkCompanyName(String name) throws AdminServiceException {
         Optional<Company> company = this.companyRepository.findByName(name);
@@ -236,10 +236,10 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public Company addCompany(Company company) throws AdminServiceException, UserException {
-        CheckValidCompany(company); // check valid company
+        CheckValidCompany(company); // check valid Company
         this.checkEmailAvailable(company.getEmail()); // check email available
         this.checkCompanyName(company.getName()); // check name available
-        company.setId(ID_TO_SAVE);
+        company.setId(ID_TO_SAVE); // set id to 0 to save in DB
         Company save = this.companyRepository.save(company);
         User user = new User(company.getEmail(), company.getPassword(), NOT_EXPIRED, NOT_LOCKED,
                 CREDENTIALS_NOT_EXPIRED, ENABLED, save);
@@ -259,9 +259,9 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public Customer addCustomer(Customer customer) throws AdminServiceException, UserException {
-        CheckValidCustomer(customer);
-        this.checkEmailAvailable(customer.getEmail());
-        customer.setId(ID_TO_SAVE);
+        CheckValidCustomer(customer); // check valid Customer
+        this.checkEmailAvailable(customer.getEmail()); // check email available
+        customer.setId(ID_TO_SAVE); // set id to 0 to save in DB
         Customer save = this.customerRepository.save(customer);
         User user = new User(customer.getEmail(), customer.getPassword(), NOT_EXPIRED, NOT_LOCKED,
                 CREDENTIALS_NOT_EXPIRED, ENABLED, save);
@@ -293,9 +293,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     /**
-     * Find all Coupon Entities from the DB.
+     * Find all Coupon Entities from the DB. Each Coupon hold data from the SQL DB in its field members.
      *
-     * @return Collection of Coupon Entities model.
+     * @return Collection of Coupon Entities from SQL DB.
      */
     @Override
     public Collection<Coupon> findAllCoupons() {
