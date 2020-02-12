@@ -307,7 +307,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * Find all Coupon Entities from the DB. Each Coupon hold data from the SQL DB in its field members.
+     * Find all Coupon Entities from the DB. Each Coupon holds data from the SQL DB in its field members.
      *
      * @return Collection of Coupon Entities from SQL DB.
      */
@@ -317,7 +317,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     /**
-     * Find all Coupon Entities from the DB that are issued by this Company. Each Coupon hold data from the SQL DB in
+     * Find all Coupon Entities from the DB that are issued by this Company. Each Coupon holds data from the SQL DB in
      * its field members.
      *
      * @return Collection of Coupon Entities of this Company from SQL DB.
@@ -442,12 +442,12 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public String deleteCouponByTitle(String title) throws CompanyServiceException {
         Collection<Coupon> companyCoupons = this.company.getCoupons();
-        for (Coupon coupon : companyCoupons) {
-            if (coupon.getTitle().equals(title)) {
-                this.company.getCoupons().remove(coupon);
-                this.companyRepository.save(this.company);
-                this.couponRepository.delete(coupon);
-                this.customerCouponRepository.deleteAllByCouponId(coupon.getId());
+        for (Coupon coupon : companyCoupons) { // iterate over company coupons
+            if (coupon.getTitle().equals(title)) { // find by title
+                this.company.getCoupons().remove(coupon); // remove from local instace of company
+                this.companyRepository.save(this.company); // save company to DB
+                this.couponRepository.delete(coupon); // delete in DB Coupon
+                this.customerCouponRepository.deleteAllByCouponId(coupon.getId()); // delete in DB CustomerCoupon
                 return COUPON_DELETED;
             }
         }

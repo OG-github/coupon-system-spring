@@ -293,7 +293,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     /**
-     * Find all Coupon Entities from the DB. Each Coupon hold data from the SQL DB in its field members.
+     * Find all Coupon Entities from the DB. Each Coupon holds data from the SQL DB in its field members.
      *
      * @return Collection of Coupon Entities from SQL DB.
      */
