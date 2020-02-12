@@ -98,25 +98,25 @@ public class AdminServiceImpl implements AdminService {
      * @throws AdminServiceException Thrown if parameters are null or invalid.
      */
     public static void CheckValidCompany(Company company) throws AdminServiceException {
-        if (null == company) {
+        if (null == company) { // null company
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_COMP);
         }
-        if (null == company.getEmail()) {
+        if (null == company.getEmail()) { // null email
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_EMAIL);
         }
-        if (null == company.getPassword()) {
+        if (null == company.getPassword()) { // null password
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_PASSWORD);
         }
-        if (null == company.getName()) {
+        if (null == company.getName()) { // null name
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_COMP_NAME);
         }
-        if (company.getEmail().length() < Company.MIN_CHAR) {
+        if (company.getEmail().length() < Company.MIN_CHAR) { // email too short
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.EMAIL_SHORT);
         }
-        if (company.getPassword().length() < Company.MIN_CHAR) {
+        if (company.getPassword().length() < Company.MIN_CHAR) { // password too short
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.PASSWORD_SHORT);
         }
-        if (company.getName().length() < Company.MIN_CHAR) {
+        if (company.getName().length() < Company.MIN_CHAR) { // name too short
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.COMP_NAME_SHORT);
         }
     }
@@ -129,32 +129,32 @@ public class AdminServiceImpl implements AdminService {
      * @throws AdminServiceException Thrown if parameters are null or invalid.
      */
     public static void CheckValidCustomer(Customer customer) throws AdminServiceException {
-        if (null == customer) {
+        if (null == customer) { // null customer
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_CUST);
         }
-        if (null == customer.getEmail()) {
+        if (null == customer.getEmail()) { // null email
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_EMAIL);
         }
-        if (null == customer.getPassword()) {
+        if (null == customer.getPassword()) { // null password
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_PASSWORD);
         }
-        if (null == customer.getFirstName()) {
+        if (null == customer.getFirstName()) { // null first name
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_FIRST_NAME);
         }
-        if (null == customer.getLastName()) {
+        if (null == customer.getLastName()) { // null last name
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_LAST_NAME);
         }
-        if (customer.getEmail().length() < Customer.MIN_CHAR) {
+        if (customer.getEmail().length() < Customer.MIN_CHAR) { // email too short
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.EMAIL_SHORT);
         }
-        if (customer.getPassword().length() < Customer.MIN_CHAR) {
+        if (customer.getPassword().length() < Customer.MIN_CHAR) { // password too short
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.PASSWORD_SHORT);
         }
-        if (customer.getFirstName().length() < Customer.MIN_CHAR_NAME) {
+        if (customer.getFirstName().length() < Customer.MIN_CHAR_NAME) { // first name too short
             throw new AdminServiceException(
                     AdminServiceException.INVALID_CUST + AdminServiceException.FIRST_NAME_SHORT);
         }
-        if (customer.getLastName().length() < Customer.MIN_CHAR_NAME) {
+        if (customer.getLastName().length() < Customer.MIN_CHAR_NAME) { // last name too short
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.LAST_NAME_SHORT);
         }
     }

@@ -42,6 +42,16 @@ public class CompanyServiceImpl implements CompanyService {
     /* Represents no Coupons left for a Customer to use. */
     private static final int NO_COUPON_LEFT_AMOUNT = 0;
 
+    /**
+     * Return message if using a Coupon and updating in the DB was successful.
+     */
+    private static final String COUPON_USED = "Coupon used successfully";
+
+    /**
+     * Return message if deleting a Coupon from the DB was successful.
+     */
+    private static final String COUPON_DELETED = "Coupon deleted successfully";
+
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
     /* Company Entity model attached and associated to this Service */
@@ -78,17 +88,19 @@ public class CompanyServiceImpl implements CompanyService {
      * @throws CompanyServiceException Thrown if parameters are null or invalid.
      */
     private static void CheckValidCompany(Company company) throws CompanyServiceException {
-        if (null == company) {
-            throw new CompanyServiceException("Invalid Company: Company null ");
+        if (null == company) { // null company
+            throw new CompanyServiceException(CompanyServiceException.INVALID_COMP + CompanyServiceException.NULL_COMP);
         }
-        if (null == company.getName()) {
-            throw new CompanyServiceException("Invalid Company: name null ");
+        if (null == company.getName()) { // null name
+            throw new CompanyServiceException(CompanyServiceException.INVALID_COMP + CompanyServiceException.NULL_NAME);
         }
-        if (null == company.getEmail()) {
-            throw new CompanyServiceException("Invalid Company: email null ");
+        if (null == company.getEmail()) { // null email
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COMP + CompanyServiceException.NULL_EMAIL);
         }
-        if (null == company.getPassword()) {
-            throw new CompanyServiceException("Invalid Company: password null ");
+        if (null == company.getPassword()) { // null password
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COMP + CompanyServiceException.NULL_PASSWORD);
         }
     }
 
@@ -100,35 +112,45 @@ public class CompanyServiceImpl implements CompanyService {
      * @throws CompanyServiceException Thrown if parameters are null or invalid.
      */
     private static void CheckValidCoupon(Coupon coupon) throws CompanyServiceException {
-        if (null == coupon) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon null ");
+        if (null == coupon) { // null coupon
+            throw new CompanyServiceException(CompanyServiceException.INVALID_COUP + CompanyServiceException.NULL_COUP);
         }
-        if (null == coupon.getTitle()) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon title null ");
+        if (null == coupon.getTitle()) { // null title
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.NULL_TITLE);
         }
-        if (null == coupon.getStartDate()) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon start date null ");
+        if (null == coupon.getStartDate()) { // null startDate
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.NULL_STARTDATE);
         }
-        if (null == coupon.getEndDate()) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon end date null ");
+        if (null == coupon.getEndDate()) { // null endDate
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.NULL_ENDDATE);
         }
+        // null or invalid category
         if (CouponCategory.valueOf(coupon.getCategory()).equals(CouponCategory.NOT_EXIST)) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon Category invalid ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.INVALID_CATEGORY);
         }
-        if (null == coupon.getDescription()) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon description null ");
+        if (null == coupon.getDescription()) { // null description
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.NULL_DESCRIPTION);
         }
-        if (coupon.getTitle().length() < Coupon.MIN_CHAR) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon title too short ");
+        if (coupon.getTitle().length() < Coupon.MIN_CHAR) { // title too short
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.TITLE_SHORT);
         }
-        if (coupon.getAmount() < Coupon.MIN_AMOUNT) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon amount below zero ");
+        if (coupon.getAmount() < Coupon.MIN_AMOUNT) { // amount too low
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.AMOUNT_INVALID);
         }
-        if (coupon.getDescription().length() < Coupon.MIN_CHAR) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon description too short ");
+        if (coupon.getDescription().length() < Coupon.MIN_CHAR) { // description too short
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.DESCRIPTION_SHORT);
         }
-        if (coupon.getPrice() < Coupon.MIN_PRICE) {
-            throw new CompanyServiceException("Invalid Coupon: Coupon price below zero ");
+        if (coupon.getPrice() < Coupon.MIN_PRICE) { // price too low
+            throw new CompanyServiceException(
+                    CompanyServiceException.INVALID_COUP + CompanyServiceException.PRICE_INVALID);
         }
     }
 
@@ -182,7 +204,7 @@ public class CompanyServiceImpl implements CompanyService {
         Collection<Coupon> coupons = this.couponRepository.findAll();
         for (Coupon coupon : coupons) {
             if (coupon.getTitle().equals(title)) {
-                throw new CompanyServiceException("Coupon title already taken ");
+                throw new CompanyServiceException(CompanyServiceException.COUP_TITLE_TAKEN);
             }
         }
     }
@@ -200,7 +222,8 @@ public class CompanyServiceImpl implements CompanyService {
         Optional<Coupon> couponByTitle = this.couponRepository.findCompanyCouponByTitle(coupon.getTitle(),
                 this.company.getId());
         if (!couponByTitle.isPresent()) {
-            throw new CompanyServiceException("Update Coupon failed: Coupon not found ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.UPDATE_COUP + CompanyServiceException.COUP_NOT_FOUND);
         }
         // id is not sent in update must be set here
         coupon.setId(couponByTitle.get().getId());
@@ -218,24 +241,27 @@ public class CompanyServiceImpl implements CompanyService {
     private void checkUpdateCompany(Company company) throws CompanyServiceException {
         // check if email changed
         if (!company.getEmail().equals(this.company.getEmail())) {
-            throw new CompanyServiceException("Update Company fail: Can not change email ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.UPDATE_COMP + CompanyServiceException.EMAIL_CHANGE);
 
         }
         // check if new name is too short
         if (company.getName().length() < Company.MIN_CHAR) {
-            throw new CompanyServiceException("Update Company fail: New name is too short ");
+            throw new CompanyServiceException(CompanyServiceException.UPDATE_COMP + CompanyServiceException.NAME_SHORT);
 
         }
         // name changed so check if new name is already taken
         if (!company.getName().equals(this.company.getName())) {
             Optional<Company> companyRepo = this.companyRepository.findByName(company.getName());
             if (companyRepo.isPresent()) { // name already taken
-                throw new CompanyServiceException("Invalid Company: name already taken ");
+                throw new CompanyServiceException(
+                        CompanyServiceException.UPDATE_COMP + CompanyServiceException.COMP_NAME_TAKEN);
             }
         }
         // check if password too short
         if (company.getPassword().length() < Company.MIN_CHAR) {
-            throw new CompanyServiceException("Update Company fail: New password is too short ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.UPDATE_COMP + CompanyServiceException.PASSWORD_SHORT);
 
         }
         company.setId(this.company.getId());
@@ -260,10 +286,10 @@ public class CompanyServiceImpl implements CompanyService {
             this.company.add(coupon);
         }
         catch (CompanyException e) {
-            throw new CompanyServiceException("Add Coupon failed: " + e.getMessage());
+            throw new CompanyServiceException(CompanyServiceException.ADD_COUP + e.getMessage());
         }
         catch (CouponException e) {
-            throw new CompanyServiceException("Add Coupon failed: " + e.getMessage());
+            throw new CompanyServiceException(CompanyServiceException.ADD_COUP + e.getMessage());
         }
         return this.couponRepository.save(coupon);
     }
@@ -336,36 +362,41 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public String useCoupon(String couponTitle, String customerEmail) throws CompanyServiceException, CouponException {
         // check nulls
-        if (null == couponTitle) {
-            throw new CompanyServiceException("Use Coupon failed: Coupon title null ");
+        if (null == couponTitle) { // coupon title null
+            throw new CompanyServiceException(CompanyServiceException.USE_COUP + CompanyServiceException.NULL_TITLE);
         }
-        if (null == customerEmail) {
-            throw new CompanyServiceException("Use Coupon failed: Customer email null ");
+        if (null == customerEmail) { // customer email null
+            throw new CompanyServiceException(
+                    CompanyServiceException.USE_COUP + CompanyServiceException.CUST_EMAIL_NULL);
         }
         // find customer and find coupon
         Optional<Coupon> coupon = this.couponRepository.findByTitle(couponTitle);
         Optional<Customer> customer = this.customerRepository.findByEmail(customerEmail);
         // check if found
         if (!coupon.isPresent()) {
-            throw new CompanyServiceException("Use Coupon failed: Coupon not found ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.USE_COUP + CompanyServiceException.COUP_NOT_FOUND);
         }
         if (!customer.isPresent()) {
-            throw new CompanyServiceException("Use Coupon failed: Customer not found ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.USE_COUP + CompanyServiceException.CUST_NOT_FOUND);
         }
         // check if customer owns this coupon
         Optional<CustomerCoupon> customerCoupon =
                 this.customerCouponRepository.findByCustomerIdAndCouponId(customer.get().getId(), coupon.get().getId());
         if (!customerCoupon.isPresent()) {
-            throw new CompanyServiceException("Use Coupon failed: Customer dose not own this Coupon ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.USE_COUP + CompanyServiceException.CUST_NOT_OWN_COUP);
         }
         // check if amount left to use by customer
         if (customerCoupon.get().getAmount() <= NO_COUPON_LEFT_AMOUNT) {
             this.customerCouponRepository.delete(customerCoupon.get());
-            throw new CompanyServiceException("Use Coupon failed: Customer dose not have enough Coupons ");
+            throw new CompanyServiceException(
+                    CompanyServiceException.USE_COUP + CompanyServiceException.CUST_NO_COUP_LEFT);
         }
         customerCoupon.get().useCoupon(); // reduce by 1
         this.customerCouponRepository.save(customerCoupon.get());
-        return "Coupon used successfully";
+        return COUPON_USED;
     }
 
 
@@ -388,8 +419,9 @@ public class CompanyServiceImpl implements CompanyService {
         // update local instance here in Service
         this.company = company;
         Optional<User> user = this.userRepository.findByEmail(this.company.getEmail());
-        if (!user.isPresent()) {
-            throw new CompanyServiceException("Update Company failed: Update User info failed. ");
+        if (!user.isPresent()) { // if user is not found for this company
+            throw new CompanyServiceException(
+                    CompanyServiceException.UPDATE_COMP + CompanyServiceException.USER_NOT_FOUND);
         }
         // update the User in DB
         user.get().setClient(this.company);
@@ -401,9 +433,11 @@ public class CompanyServiceImpl implements CompanyService {
     /*----------------- Remove / Delete  -----------------------*/
 
     /**
+     * Delete a Coupon in the DB this Company is issuing by title (unique parameter).
+     *
      * @param title Title of the Coupon to delete.
-     * @return
-     * @throws CompanyServiceException
+     * @return String message of deletion status.
+     * @throws CompanyServiceException Thrown if failed to delete in DB, title invalid or Coupon was not found .
      */
     @Override
     public String deleteCouponByTitle(String title) throws CompanyServiceException {
@@ -414,10 +448,10 @@ public class CompanyServiceImpl implements CompanyService {
                 this.companyRepository.save(this.company);
                 this.couponRepository.delete(coupon);
                 this.customerCouponRepository.deleteAllByCouponId(coupon.getId());
-                return "Coupon deleted successfully";
+                return COUPON_DELETED;
             }
         }
-        throw new CompanyServiceException("Delete failed: Coupon not found ");
+        throw new CompanyServiceException(CompanyServiceException.DLT + CompanyServiceException.COUP_NOT_FOUND);
     }
 }
 
