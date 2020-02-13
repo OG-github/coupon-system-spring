@@ -72,19 +72,24 @@ public class CustomerServiceImpl implements CustomerService {
      */
     private static void CheckValidCustomer(Customer customer) throws CustomerServiceException {
         if (null == customer) { // null customer
-            throw new CustomerServiceException("Invalid Customer: Customer null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.INVALID_CUST + CustomerServiceException.NULL_CUST);
         }
         if (null == customer.getFirstName()) { // null first name
-            throw new CustomerServiceException("Invalid Customer: first name null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.INVALID_CUST + CustomerServiceException.NULL_FIRST_NAME);
         }
         if (null == customer.getLastName()) { // null last name
-            throw new CustomerServiceException("Invalid Customer: last name null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.INVALID_CUST + CustomerServiceException.NULL_LAST_NAME);
         }
         if (null == customer.getEmail()) { // null email
-            throw new CustomerServiceException("Invalid Customer: email null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.INVALID_CUST + CustomerServiceException.NULL_EMAIL);
         }
         if (null == customer.getPassword()) { // null password
-            throw new CustomerServiceException("Invalid Customer: password null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.INVALID_CUST + CustomerServiceException.NULL_PASSWORD);
         }
     }
 
@@ -134,22 +139,28 @@ public class CustomerServiceImpl implements CustomerService {
      */
     private void checkUpdateCustomer(Customer customer) throws CustomerServiceException {
         if (!customer.getEmail().equals(this.customer.getEmail())) { // email changed
-            throw new CustomerServiceException("Update Customer fail: Can not change email ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.EMAIL_CHANGE);
         }
         if (null == customer.getFirstName()) { // null first name
-            throw new CustomerServiceException("Update Customer fail: New first name is null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.NULL_FIRST_NAME);
         }
         if (null == customer.getLastName()) { // null last name
-            throw new CustomerServiceException("Update Customer fail: New last name is null ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.NULL_LAST_NAME);
         }
         if (customer.getPassword().length() < Customer.MIN_CHAR) { // password too short
-            throw new CustomerServiceException("Update Customer fail: New password is too short ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.PASSWORD_SHORT);
         }
         if (customer.getFirstName().length() < Customer.MIN_CHAR_NAME) { // first name too short
-            throw new CustomerServiceException("Update Customer fail: New first name is too short ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.FIRST_NAME_SHORT);
         }
         if (customer.getLastName().length() < Customer.MIN_CHAR_NAME) { // last name too short
-            throw new CustomerServiceException("Update Customer fail: New last name is too short ");
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.LAST_NAME_SHORT);
         }
         customer.setId(this.customer.getId());
     }
@@ -202,16 +213,18 @@ public class CustomerServiceImpl implements CustomerService {
      * @throws UserException            Thrown if updating the User data base failed.
      */
     @Override
-    public Customer updateCustomer(Customer customer) //TODO add docu
+    public Customer updateCustomer(Customer customer)
             throws CustomerServiceException, CustomerException, UserException {
-        CheckValidCustomer(customer);
-        this.checkUpdateCustomer(customer);
+        CheckValidCustomer(customer); // check valid
+        this.checkUpdateCustomer(customer); // update in DB
+        // update local instance
         customer.setCoupons(this.customer.getCoupons());
         this.customer = customer;
         Optional<User> user = this.userRepository.findByEmail(this.customer.getEmail());
         if (!user.isPresent()) {
-            throw new CustomerServiceException("Update Customer failed: Update User info failed. ");
+            throw new CustomerServiceException(CustomerServiceException.UPDATE_CUST + "Update User info failed. ");
         }
+        // update User DB
         user.get().setClient(this.customer);
         user.get().setEmail();
         user.get().setPassword();
@@ -219,26 +232,41 @@ public class CustomerServiceImpl implements CustomerService {
         return this.customerRepos.save(this.customer);
     }
 
+    /**
+     * Purchase a Coupon for this Customer. The amount of this Coupon available for sale will decrease by 1, and the
+     * Coupon will be associated in CustomerCoupons with this Customer. The Coupon will be identified by the
+     * CouponTitle which is a unique parameter in the data base.
+     *
+     * @param couponTitle Title of the Coupon (unique parameter) to purchase.
+     * @return
+     * @throws CustomerServiceException Thrown if unable to find Coupon or updating failed.
+     * @throws CustomerException        Thrown if updating Customer in DB failed.
+     * @throws CouponException          Thrown if updating Coupon in DB failed.
+     */
     @Override
     public String purchaseCoupon(String couponTitle)
             throws CustomerServiceException, CustomerException, CouponException {
+        // find Coupon by title
         Optional<Coupon> coupon = this.couponRepository.findByTitle(couponTitle);
         if (!coupon.isPresent()) {
             throw new CustomerServiceException("Purchase Coupon Failed: Coupon does not exist ");
         }
+        // find CustomerCoupon by Coupon's title and the local instance of Customer
         Optional<CustomerCoupon> customerCoupon =
                 this.customerCouponRepository.findByCustomerIdAndCouponId(this.customer.getId(), coupon.get().getId());
+        // check if CustomerCoupon exists (purchased before)
         if (customerCoupon.isPresent()) {
-            customerCoupon.get().purchaseCoupon();
-            this.customerCouponRepository.save(customerCoupon.get());
-            this.customerRepos.save(this.customer);
+            customerCoupon.get().purchaseCoupon(); // purchase
+            this.customerCouponRepository.save(customerCoupon.get()); // save to CustomerCoupon DB
+            this.customerRepos.save(this.customer); // save to Customer DB
             return "Coupon purchased successfully, you now own " + customerCoupon.get().getAmount();
         }
+        // first purchase, make new CustomerCoupon
         CustomerCoupon newCustomerCoupon = new CustomerCoupon(this.customer, coupon.get());
         newCustomerCoupon.purchaseCoupon();
-        this.customer.addCoupon(newCustomerCoupon);
-        this.customerCouponRepository.save(newCustomerCoupon);
-        this.customerRepos.save(this.customer);
+        this.customer.addCoupon(newCustomerCoupon); // add Coupon to Customer
+        this.customerCouponRepository.save(newCustomerCoupon); // save to CustomerCoupon DB
+        this.customerRepos.save(this.customer); // save to Customer DB
         return "Coupon purchased successfully, you now own " + newCustomerCoupon.getAmount();
     }
 }

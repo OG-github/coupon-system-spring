@@ -57,7 +57,7 @@ public class CompanyServiceException extends Exception {
     public static final String EMAIL_CHANGE = "Can not change email ";
 
     /**
-     * Exception message if Name too short.
+     * Exception message if Name is too short.
      */
     public static final String NAME_SHORT = "Name too short ";
 
@@ -67,7 +67,7 @@ public class CompanyServiceException extends Exception {
     public static final String COMP_NAME_TAKEN = "name already taken ";
 
     /**
-     * Exception message if Password too short.
+     * Exception message if Password is too short.
      */
     public static final String PASSWORD_SHORT = "Password too short ";
 

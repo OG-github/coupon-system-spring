@@ -20,12 +20,12 @@ public class AdminServiceException extends Exception {
     public static final String NULL_PASSWORD = "null password ";
 
     /**
-     * Exception message for short email.
+     * Exception message if email is too short.
      */
     public static final String EMAIL_SHORT = "email too short ";
 
     /**
-     * Exception message for short password.
+     * Exception message if password is too short.
      */
     public static final String PASSWORD_SHORT = "password too short ";
 
@@ -52,7 +52,7 @@ public class AdminServiceException extends Exception {
     public static final String NULL_COMP_NAME = "null name ";
 
     /**
-     * Exception message if Company name too short.
+     * Exception message if Company name is too short.
      */
     public static final String COMP_NAME_SHORT = "Company name too short ";
 
@@ -94,7 +94,7 @@ public class AdminServiceException extends Exception {
     public static final String FIRST_NAME_SHORT = "first name too short ";
 
     /**
-     * Exception message if Customer last name too short.
+     * Exception message if Customer last name is too short.
      */
     public static final String LAST_NAME_SHORT = "last name too short ";
 
