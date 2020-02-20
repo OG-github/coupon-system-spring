@@ -41,8 +41,12 @@ import com.og.CouponSystemJB.service.exception.CustomerServiceException;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CustomerServiceImpl implements CustomerService {
 
-    /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
+    /*----------------- CONSTANTS ------------------------------------------------------------------------------------*/
 
+    /**
+     * Return message if purchasing a Coupon and updating in the DB was successful.
+     */
+    private static final String COUP_PURCH_SUCC_MSG = "Coupon purchased successfully, you now own ";
 
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
@@ -61,7 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
     /* SQL repository for CustomerCoupon Entity */
     private CustomerCouponRepositorySql customerCouponRepository;
 
-    /*----------------- Static Methods / Functions ----------------------------------------------------------------------*/
+    /*----------------- Static Methods / Functions -------------------------------------------------------------------*/
 
     /**
      * Static helper function to determine if Customer is valid or not. The parameters of the Customer will be checked
@@ -113,7 +117,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.userRepository = userRepository;
     }
 
-    /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
+    /*----------------- Methods / Functions --------------------------------------------------------------------------*/
 
     /**
      * (For LoginService) Setter for the Customer Entity model this Service holds and is responsible for.
@@ -221,8 +225,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCoupons(this.customer.getCoupons());
         this.customer = customer;
         Optional<User> user = this.userRepository.findByEmail(this.customer.getEmail());
-        if (!user.isPresent()) {
-            throw new CustomerServiceException(CustomerServiceException.UPDATE_CUST + "Update User info failed. ");
+        if (!user.isPresent()) { // user not found
+            throw new CustomerServiceException(
+                    CustomerServiceException.UPDATE_CUST + CustomerServiceException.USER_NOT_FOUND);
         }
         // update User DB
         user.get().setClient(this.customer);
@@ -248,8 +253,9 @@ public class CustomerServiceImpl implements CustomerService {
             throws CustomerServiceException, CustomerException, CouponException {
         // find Coupon by title
         Optional<Coupon> coupon = this.couponRepository.findByTitle(couponTitle);
-        if (!coupon.isPresent()) {
-            throw new CustomerServiceException("Purchase Coupon Failed: Coupon does not exist ");
+        if (!coupon.isPresent()) { // coupon not found
+            throw new CustomerServiceException(
+                    CustomerServiceException.COUP_PURCH + CustomerServiceException.COUP_NOT_EXIST);
         }
         // find CustomerCoupon by Coupon's title and the local instance of Customer
         Optional<CustomerCoupon> customerCoupon =
@@ -259,7 +265,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerCoupon.get().purchaseCoupon(); // purchase
             this.customerCouponRepository.save(customerCoupon.get()); // save to CustomerCoupon DB
             this.customerRepos.save(this.customer); // save to Customer DB
-            return "Coupon purchased successfully, you now own " + customerCoupon.get().getAmount();
+            return COUP_PURCH_SUCC_MSG + customerCoupon.get().getAmount();
         }
         // first purchase, make new CustomerCoupon
         CustomerCoupon newCustomerCoupon = new CustomerCoupon(this.customer, coupon.get());
@@ -267,6 +273,6 @@ public class CustomerServiceImpl implements CustomerService {
         this.customer.addCoupon(newCustomerCoupon); // add Coupon to Customer
         this.customerCouponRepository.save(newCustomerCoupon); // save to CustomerCoupon DB
         this.customerRepos.save(this.customer); // save to Customer DB
-        return "Coupon purchased successfully, you now own " + newCustomerCoupon.getAmount();
+        return COUP_PURCH_SUCC_MSG + newCustomerCoupon.getAmount();
     }
 }

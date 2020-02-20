@@ -21,8 +21,9 @@ import com.og.CouponSystemJB.service.exception.CompanyServiceException;
 /**
  * This interface will sign all the methods and functions Company Services have to implement on different Repositories.
  * The Services will use the Data Base Data Access Objects (DB DAO) and will handle the business logic and data
- * manipulation. Must extend EntityService so can be used by LoginService and be assigned to tokens. Each Service
- * must represent one Client.
+ * manipulation. Must extend EntityService so that the ClientSession class (representing a session with a Client
+ * entity) can hold all sub-hierarchical Services regardless of Client or role; LoginService will set each
+ * ClientSession with a respective Service and be assigned to tokens. Each Service must represent one Client.
  */
 public interface CompanyService extends EntityService {
 

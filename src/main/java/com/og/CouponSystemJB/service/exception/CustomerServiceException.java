@@ -9,6 +9,11 @@ public class CustomerServiceException extends Exception {
 
     /*---------------------- User ---------------------------*/
 
+    /**
+     * Exception message if User was not found in DB.
+     */
+    public static final String USER_NOT_FOUND = "Update User info failed. User was not found in DB ";
+
     /*---------------------- General ---------------------------*/
 
     /**
@@ -65,6 +70,18 @@ public class CustomerServiceException extends Exception {
      * Exception message if last name is too short.
      */
     public static final String LAST_NAME_SHORT = "Last name too short ";
+
+    /*---------------------- Coupon ---------------------------*/
+
+    /**
+     * Exception message for purchasing Coupon in DB failed.
+     */
+    public static final String COUP_PURCH = "Purchase Coupon Failed: ";
+
+    /**
+     * Exception message for not finding a Coupon in DB.
+     */
+    public static final String COUP_NOT_EXIST = "Coupon does not exist ";
 
     public CustomerServiceException(String msg) {
         super(msg);
