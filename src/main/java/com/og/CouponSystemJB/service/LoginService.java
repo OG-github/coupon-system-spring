@@ -1,6 +1,22 @@
 package com.og.CouponSystemJB.service;
 
+/*----------------- IMPORTS -----------------------------------------------------------------------------------------*/
+
+/*-------------------- java --------------------*/
+
+/*---------- util ----------*/
+
+import java.util.Optional;
+
+/*-------------------- springframework --------------------*/
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 import com.og.CouponSystemJB.entity.*;
+
+/*-------------------- CouponSystemJB --------------------*/
+
 import com.og.CouponSystemJB.entity.exception.CompanyException;
 import com.og.CouponSystemJB.entity.exception.CustomerException;
 import com.og.CouponSystemJB.repository.AdminRepositorySql;
@@ -9,12 +25,10 @@ import com.og.CouponSystemJB.repository.CustomerRepositorySql;
 import com.og.CouponSystemJB.repository.UserRepositorySql;
 import com.og.CouponSystemJB.rest.ClientSession;
 import com.og.CouponSystemJB.service.exception.LoginServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+/**
+ *
+ */
 @Service
 public class LoginService {
 

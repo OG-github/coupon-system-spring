@@ -285,12 +285,10 @@ public class CompanyServiceImpl implements CompanyService {
             coupon.setCompany(this.company);
             this.company.add(coupon);
         }
-        catch (CompanyException e) {
+        catch (CompanyException | CouponException e) {
             throw new CompanyServiceException(CompanyServiceException.ADD_COUP + e.getMessage());
         }
-        catch (CouponException e) {
-            throw new CompanyServiceException(CompanyServiceException.ADD_COUP + e.getMessage());
-        }
+
         return this.couponRepository.save(coupon);
     }
     /*----------------- Read / Get -----------------------*/
@@ -415,8 +413,8 @@ public class CompanyServiceImpl implements CompanyService {
     public Company update(Company company) throws CompanyServiceException, CompanyException, UserException {
         CheckValidCompany(company); // check valid Company parameters
         checkUpdateCompany(company); // check email not changed, and parameters not too short
-        company.setCoupons(this.company.getCoupons());
         // update local instance here in Service
+        company.setCoupons(this.company.getCoupons());
         this.company = company;
         Optional<User> user = this.userRepository.findByEmail(this.company.getEmail());
         if (!user.isPresent()) { // if user is not found for this company

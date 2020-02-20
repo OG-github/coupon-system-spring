@@ -12,12 +12,12 @@ import java.util.Optional;
 /*-------------------- springframework --------------------*/
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /*-------------------- CouponSystemJB --------------------*/
+
 import com.og.CouponSystemJB.entity.*;
 import com.og.CouponSystemJB.entity.exception.UserException;
 import com.og.CouponSystemJB.repository.*;
@@ -99,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
      * @param company Company Entity model to check.
      * @throws AdminServiceException Thrown if parameters are null or invalid.
      */
-    public static void CheckValidCompany(Company company) throws AdminServiceException {
+    private static void CheckValidCompany(Company company) throws AdminServiceException {
         if (null == company) { // null company
             throw new AdminServiceException(AdminServiceException.INVALID_COMP + AdminServiceException.NULL_COMP);
         }
@@ -130,7 +130,7 @@ public class AdminServiceImpl implements AdminService {
      * @param customer Customer Entity model to check.
      * @throws AdminServiceException Thrown if parameters are null or invalid.
      */
-    public static void CheckValidCustomer(Customer customer) throws AdminServiceException {
+    private static void CheckValidCustomer(Customer customer) throws AdminServiceException {
         if (null == customer) { // null customer
             throw new AdminServiceException(AdminServiceException.INVALID_CUST + AdminServiceException.NULL_CUST);
         }
@@ -243,11 +243,19 @@ public class AdminServiceImpl implements AdminService {
         this.checkCompanyName(company.getName()); // check name available
         company.setId(ID_TO_SAVE); // set id to 0 to save in DB
         Company save = this.companyRepository.save(company);
-        User user = new User(company.getEmail(), company.getPassword(), NOT_EXPIRED, NOT_LOCKED,
+        // save new User
+        User user = new User(save.getEmail(), save.getPassword(), NOT_EXPIRED, NOT_LOCKED,
                 CREDENTIALS_NOT_EXPIRED, ENABLED, save);
         user.setId(ID_TO_SAVE);
         this.userRepository.save(user);
-        return this.companyRepository.findById(save.getId()).get();
+        // return Company from the DB
+        Optional<Company> optComapny = this.companyRepository.findById(save.getId());
+        if (optComapny.isPresent()) {
+            return optComapny.get();
+        }
+        else {
+            throw new AdminServiceException(AdminServiceException.COMP_NOT_FOUND);
+        }
     }
 
     /**
@@ -264,12 +272,20 @@ public class AdminServiceImpl implements AdminService {
         CheckValidCustomer(customer); // check valid Customer
         this.checkEmailAvailable(customer.getEmail()); // check email available
         customer.setId(ID_TO_SAVE); // set id to 0 to save in DB
-        Customer save = this.customerRepository.save(customer);
-        User user = new User(customer.getEmail(), customer.getPassword(), NOT_EXPIRED, NOT_LOCKED,
+        Customer save = this.customerRepository.save(customer); // saved customer
+        User user = new User(save.getEmail(), save.getPassword(), NOT_EXPIRED, NOT_LOCKED,
                 CREDENTIALS_NOT_EXPIRED, ENABLED, save);
+        // save new User
         user.setId(ID_TO_SAVE);
         this.userRepository.save(user);
-        return this.customerRepository.findById(save.getId()).get();
+        // return Customer from the DB
+        Optional<Customer> optCustomer = this.customerRepository.findById(save.getId());
+        if (optCustomer.isPresent()) {
+            return optCustomer.get();
+        }
+        else {
+            throw new AdminServiceException(AdminServiceException.CUST_NOT_FOUND);
+        }
     }
 
     /*----------------- Read / Get -----------------------*/
