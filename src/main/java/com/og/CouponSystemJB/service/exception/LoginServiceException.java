@@ -17,6 +17,7 @@ public class LoginServiceException extends Exception {
 
     public static final String INVALID_CLIENT = "Error finding corresponding Client ";
 
+    public static final String INVALID_TOKEN = "Can not generate valid random token to login";
 
     public LoginServiceException(String msg){
         super(msg);

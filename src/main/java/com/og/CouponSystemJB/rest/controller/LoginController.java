@@ -113,13 +113,16 @@ public class LoginController {
                 token = this.generateToken(); // get new token
                 ++index;
             }
+            if (null != this.tokensMap.get(token)) { // failed to generate free token
+                throw new LoginServiceException(LoginServiceException.INVALID_TOKEN);
+            }
             this.tokensMap.put(token, session); // bind token to session
             // add cookie to response
             response.addCookie(new Cookie("randToken", token));
             return ResponseEntity.ok(token);
         }
         catch (LoginServiceException | CompanyException | CustomerException e) {
-            return ResponseEntity.ok("Error" + e.getMessage());
+            return ResponseEntity.ok("Error: " + e.getMessage());
         }
     }
 
