@@ -26,19 +26,43 @@ public class CustomerController {
         this.tokensMap = tokensMap;
     }
 
-
-    private ClientSession getSession(String token) {
-        return tokensMap.get(token);
+    /**
+     *
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     * @throws ClientSessionException
+     */
+    private ClientSession getSession(String token) throws ClientSessionException {
+        ClientSession session = tokensMap.get(token);
+        if (null != session) {
+            return session;
+        }
+        throw new ClientSessionException();
     }
 
+    /**
+     *
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     * @throws ClientSessionException
+     */
+    private CustomerServiceImpl getService(String token) throws ClientSessionException {
+        ClientSession session = this.getSession(token);
+        if (null == session) {
+            throw new ClientSessionException();
+        }
+        return (CustomerServiceImpl) session.getService();
+    }
+
+    /**
+     *
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
     @GetMapping("/get")
     public ResponseEntity getCustomer(@CookieValue("randToken") String token) {
         try {
-            ClientSession session = this.getSession(token);
-            if (null == session) {
-                throw new ClientSessionException();
-            }
-            CustomerServiceImpl service = (CustomerServiceImpl) session.getService();
+            CustomerServiceImpl service = this.getService(token);
             return ResponseEntity.ok(service.getCustomer());
         }
         catch (Exception e) {
@@ -48,14 +72,15 @@ public class CustomerController {
         }
     }
 
+    /**
+     *
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
     @GetMapping("/getAllCoupons")
     public ResponseEntity getAllCoupons(@CookieValue("randToken") String token) {
         try {
-            ClientSession session = this.getSession(token);
-            if (null == session) {
-                throw new ClientSessionException();
-            }
-            CustomerServiceImpl service = (CustomerServiceImpl) session.getService();
+            CustomerServiceImpl service = this.getService(token);
             Collection<Coupon> allCoupons = service.findAllCoupons();
             if (allCoupons.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -69,14 +94,15 @@ public class CustomerController {
         }
     }
 
+    /**
+     *
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
     @GetMapping("/getCustomerCoupons")
     public ResponseEntity getCustomerCoupons(@CookieValue("randToken") String token) {
         try {
-            ClientSession session = this.getSession(token);
-            if (null == session) {
-                throw new ClientSessionException();
-            }
-            CustomerServiceImpl service = (CustomerServiceImpl) session.getService();
+            CustomerServiceImpl service = this.getService(token);
             Collection<CustomerCoupon> customerCoupons = service.findCustomerCoupons();
             if (customerCoupons.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -90,14 +116,16 @@ public class CustomerController {
         }
     }
 
+    /**
+     *
+     * @param customer
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
     @PostMapping("/update")
     public ResponseEntity update(@RequestBody Customer customer, @CookieValue("randToken") String token) {
         try {
-            ClientSession session = this.getSession(token);
-            if (null == session) {
-                throw new ClientSessionException();
-            }
-            CustomerServiceImpl service = (CustomerServiceImpl) session.getService();
+            CustomerServiceImpl service = this.getService(token);
             return ResponseEntity.ok(service.updateCustomer(customer));
         }
         catch (Exception e) {
@@ -107,14 +135,16 @@ public class CustomerController {
         }
     }
 
+    /**
+     *
+     * @param title
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
     @PostMapping("/purchase")
     public ResponseEntity purchase(@RequestParam String title, @CookieValue("randToken") String token) {
         try {
-            ClientSession session = this.getSession(token);
-            if (null == session) {
-                throw new ClientSessionException();
-            }
-            CustomerServiceImpl service = (CustomerServiceImpl) session.getService();
+            CustomerServiceImpl service = this.getService(token);
             return ResponseEntity.ok(service.purchaseCoupon(title));
         }
         catch (Exception e) {

@@ -36,7 +36,8 @@ import com.og.CouponSystemJB.service.exception.LoginServiceException;
  * This Login RESTful Controller will intercept all login requests made by HTTP in order to validate and login those
  * HTTP requests into our system. This Controller will use the LoginService in order to validate the email and
  * password and get a new ClientSession. After receiving the ClientSession with the specific EntityService, this
- * Controller will generate a random token and bind it to the ClientSession in the tokensMap.
+ * Controller will generate a random token and bind it to the ClientSession in the tokensMap, therefor any HTTP
+ * request (other than login) must provide a Cookie with the correct token.
  */
 @RestController
 @RequestMapping("/api")
@@ -58,6 +59,12 @@ public class LoginController {
 
     /* The maximum number of tries to generate a random token that isn't already taken */
     private static final int MAX_TRY = 100;
+
+    /* General error message. */
+    private static final String ERROR_MSG = "Error: ";
+
+    /* Name for the HTTP Cookie that saves the token. */
+    private static final String COOKIE_TOKEN_NAME = "randToken";
 
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
@@ -84,9 +91,10 @@ public class LoginController {
     /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
 
     /**
-     * Helper function to generate and new String token
+     * Helper function to generate a new universally unique identifier (UUID) as a random String token. The UUID will
+     * be converted to String and then non numerical or non alphabetical characters ("-") will be removed.
      *
-     * @return
+     * @return random String that was generated from UUID class.
      */
     private String generateToken() {
         return UUID.randomUUID()
@@ -96,10 +104,15 @@ public class LoginController {
     }
 
     /**
-     * @param email
-     * @param password
-     * @param response
-     * @return
+     * The main method of this class. This will intercept the HTTP login requests. The HTTP will provide two
+     * parameters, email and password, and this method will use LoginService to validate the login and return a new
+     * ClientSession. After validation, a new random String from a random UUID will be generated as token and will be
+     * inserted into the tokens HashMap. The returning HTTP response will have a Cookie added to it with the token.
+     *
+     * @param email    String email of the User
+     * @param password String password of the User
+     * @param response HTTP response to add a Cookie to.
+     * @return ResponseEntity with either a String of the token or an error message.
      */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password,
@@ -118,11 +131,11 @@ public class LoginController {
             }
             this.tokensMap.put(token, session); // bind token to session
             // add cookie to response
-            response.addCookie(new Cookie("randToken", token));
+            response.addCookie(new Cookie(COOKIE_TOKEN_NAME, token));
             return ResponseEntity.ok(token);
         }
         catch (LoginServiceException | CompanyException | CustomerException e) {
-            return ResponseEntity.ok("Error: " + e.getMessage());
+            return ResponseEntity.ok(ERROR_MSG + e.getMessage());
         }
     }
 
