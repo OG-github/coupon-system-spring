@@ -57,8 +57,8 @@ public class AdminController {
     /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
 
     /**
-     * This will return a ClientSession from the tokens HashMap by using the provided token. Each ClientSession is
-     * unique with a unique EntityService, and is mapped to a unique token in the map.
+     * Helper function that will return a ClientSession from the tokens HashMap by using the provided token. Each
+     * ClientSession is unique with a unique EntityService, and is mapped to a unique token in the map.
      *
      * @param token String token generated from the UUID class and given at login.
      * @return Relevant ClientSession with the correct EntityService.
@@ -73,9 +73,12 @@ public class AdminController {
     }
 
     /**
+     * Helper function that will return the AdminServiceImpl from the ClientSession it gets from the tokens Map, based
+     * on the provided token.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
-     * @throws ClientSessionException
+     * @return AdminServiceImpl the specific service for a specific Admin User.
+     * @throws ClientSessionException Thrown if ClientSession was not located by using the provided token.
      */
     private AdminServiceImpl getService(String token) throws ClientSessionException {
         ClientSession session = this.getSession(token);
@@ -90,9 +93,13 @@ public class AdminController {
     /*----------------- Post mappings -----------------------*/
 
     /**
-     * @param company
+     * HTTP post request to add a new Company to the database. This method will return a ResponseEntity with the new
+     * Company from the database. In order for the request to be valid a token who is mapped to a ClientSession with
+     * the correct EntityService must be provided.
+     *
+     * @param company JSON (without id and Coupons) of Company in the body of the request.
      * @param token   String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the new Company from the database.
      */
     @PostMapping("/companies/add")
     public ResponseEntity addCompany(@RequestBody Company company, @CookieValue("randToken") String token) {

@@ -22,7 +22,7 @@ import java.util.Optional;
 import com.og.CouponSystemJB.entity.CustomerCoupon;
 
 /**
- * Repository (DB DAO) for CustomerCoupon entity using JPA Repository. This is a Data Base Data Access Object.
+ * Repository (DB DAO) for CustomerCoupon entity using JPA Repository. This is a database Data Access Object.
  */
 @Repository
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

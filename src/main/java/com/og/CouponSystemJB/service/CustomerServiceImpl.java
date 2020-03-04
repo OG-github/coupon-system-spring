@@ -212,9 +212,9 @@ public class CustomerServiceImpl implements CustomerService {
      * @param customer Customer entity with the updated field values.
      * @return The updated Customer entity with the new values.
      * @throws CustomerServiceException Thrown if updating failed or Customer is invalid or with invalid fields.
-     * @throws CustomerException        Thrown if updating the Customer data base failed or Customer is invalid or with
+     * @throws CustomerException        Thrown if updating the Customer database failed or Customer is invalid or with
      *                                  invalid fields.
-     * @throws UserException            Thrown if updating the User data base failed.
+     * @throws UserException            Thrown if updating the User database failed.
      */
     @Override
     public Customer updateCustomer(Customer customer)
@@ -240,7 +240,7 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * Purchase a Coupon for this Customer. The amount of this Coupon available for sale will decrease by 1, and the
      * Coupon will be associated in CustomerCoupons with this Customer. The Coupon will be identified by the
-     * CouponTitle which is a unique parameter in the data base.
+     * CouponTitle which is a unique parameter in the database.
      *
      * @param couponTitle Title of the Coupon (unique parameter) to purchase.
      * @return

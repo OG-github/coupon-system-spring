@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.og.CouponSystemJB.entity.Admin;
 
 /**
- * Repository (DB DAO) for Admin entity using JPA Repository. This is a Data Base Data Access Object.
+ * Repository (DB DAO) for Admin entity using JPA Repository. This is a database Data Access Object.
  */
 @Repository
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

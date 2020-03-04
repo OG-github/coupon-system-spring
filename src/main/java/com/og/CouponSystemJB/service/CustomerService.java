@@ -20,7 +20,7 @@ import com.og.CouponSystemJB.service.exception.CustomerServiceException;
 
 /**
  * This interface will sign all the methods and functions Customer Services have to implement on different Repositories.
- * The Services will use the Data Base Data Access Objects (DB DAO) and will handle the business logic and data
+ * The Services will use the database Data Access Objects (DB DAO) and will handle the business logic and data
  * manipulation. Must extend EntityService so that the ClientSession class (representing a session with a Client
  * entity) can hold all sub-hierarchical Services regardless of Client or role; LoginService will set each
  * ClientSession with a respective Service and be assigned to tokens. Each Service must represent one Client.
@@ -30,21 +30,21 @@ public interface CustomerService extends EntityService {
     /*----------------- Read / Get -----------------------*/
 
     /**
-     * Get the Customer entity this service is handling in the data base.
+     * Get the Customer entity this service is handling in the database.
      *
      * @return Customer class this service is handling.
      */
     Customer getCustomer();
 
     /**
-     * Get all the Coupons that are in the data base.
+     * Get all the Coupons that are in the database.
      *
      * @return Collection of Coupons from all the Companies.
      */
     Collection<Coupon> findAllCoupons();
 
     /**
-     * Get all the CustomerCoupon that this Customer has purchased from the data base.
+     * Get all the CustomerCoupon that this Customer has purchased from the database.
      *
      * @return Collection of CustomerCoupon of this Customer.
      */
@@ -59,16 +59,16 @@ public interface CustomerService extends EntityService {
      * @param customer Customer entity with the updated field values.
      * @return The updated Customer with the new values.
      * @throws CustomerServiceException Thrown if updating failed or Customer is invalid or with invalid fields.
-     * @throws CustomerException        Thrown if updating the Customer data base failed or Customer is invalid or with
+     * @throws CustomerException        Thrown if updating the Customer database failed or Customer is invalid or with
      *                                  invalid fields.
-     * @throws UserException            Thrown if updating the User data base failed.
+     * @throws UserException            Thrown if updating the User database failed.
      */
     Customer updateCustomer(Customer customer) throws CustomerServiceException, CustomerException, UserException;
 
     /**
      * Purchase a Coupon for this Customer. The amount of this Coupon available for sale will decrease by 1, and the
      * Coupon will be associated in CustomerCoupons with this Customer. The Coupon will be identified by the
-     * CouponTitle which is a unique parameter in the data base.
+     * CouponTitle which is a unique parameter in the database.
      *
      * @param couponTitle Title of the Coupon (unique parameter) to purchase.
      * @return String message of update status.

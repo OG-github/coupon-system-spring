@@ -405,9 +405,9 @@ public class CompanyServiceImpl implements CompanyService {
      * @param company Company entity with the updated field values.
      * @return The updated Company entity with the new values.
      * @throws CompanyServiceException Thrown if updating failed or Company is invalid or with invalid fields.
-     * @throws CompanyException        Thrown if updating the Company data base failed or Company is invalid or with
+     * @throws CompanyException        Thrown if updating the Company database failed or Company is invalid or with
      *                                 invalid fields.
-     * @throws UserException           Thrown if updating the User data base failed.
+     * @throws UserException           Thrown if updating the User database failed.
      */
     @Override
     public Company update(Company company) throws CompanyServiceException, CompanyException, UserException {

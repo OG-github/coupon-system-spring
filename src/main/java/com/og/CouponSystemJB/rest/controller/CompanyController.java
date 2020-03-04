@@ -56,8 +56,8 @@ public class CompanyController {
     /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
 
     /**
-     * This will return a ClientSession from the tokens HashMap by using the provided token. Each ClientSession is
-     * unique with a unique EntityService, and is mapped to a unique token in the map.
+     * Helper function that will return a ClientSession from the tokens HashMap by using the provided token. Each
+     * ClientSession is unique with a unique EntityService, and is mapped to a unique token in the map.
      *
      * @param token String token generated from the UUID class and given at login.
      * @return Relevant ClientSession with the correct EntityService.
@@ -72,9 +72,12 @@ public class CompanyController {
     }
 
     /**
+     * Helper function that will return the CompanyServiceImpl from the ClientSession it gets from the tokens Map, based
+     * on the provided token.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
-     * @throws ClientSessionException
+     * @return CompanyServiceImpl the specific service for a specific Company User.
+     * @throws ClientSessionException Thrown if ClientSession was not located by using the provided token.
      */
     private CompanyServiceImpl getService(String token) throws ClientSessionException {
         ClientSession session = this.getSession(token);

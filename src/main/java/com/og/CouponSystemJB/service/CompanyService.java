@@ -20,7 +20,7 @@ import com.og.CouponSystemJB.service.exception.CompanyServiceException;
 
 /**
  * This interface will sign all the methods and functions Company Services have to implement on different Repositories.
- * The Services will use the Data Base Data Access Objects (DB DAO) and will handle the business logic and data
+ * The Services will use the database Data Access Objects (DB DAO) and will handle the business logic and data
  * manipulation. Must extend EntityService so that the ClientSession class (representing a session with a Client
  * entity) can hold all sub-hierarchical Services regardless of Client or role; LoginService will set each
  * ClientSession with a respective Service and be assigned to tokens. Each Service must represent one Client.
@@ -34,28 +34,28 @@ public interface CompanyService extends EntityService {
      *
      * @param coupon Coupon entity of a new Coupon this Company is issuing.
      * @return The new Coupon this Company is issuing if successful.
-     * @throws CompanyServiceException Thrown if failed to insert to data base or Coupon is invalid.
+     * @throws CompanyServiceException Thrown if failed to insert to database or Coupon is invalid.
      */
     Coupon addCoupon(Coupon coupon) throws CompanyServiceException;
 
     /*----------------- Read / Get -----------------------*/
 
     /**
-     * Get the Company entity this service is handling in the data base.
+     * Get the Company entity this service is handling in the database.
      *
      * @return Company class this service is handling.
      */
     Company getCompany();
 
     /**
-     * Get all the Coupons that are in the data base.
+     * Get all the Coupons that are in the database.
      *
      * @return Collection of Coupons from all the Companies.
      */
     Collection<Coupon> findAllCoupons();
 
     /**
-     * Get all the Coupons that belong to this Company from the data base.
+     * Get all the Coupons that belong to this Company from the database.
      *
      * @return Collection of Coupons from this Company.
      */
@@ -93,9 +93,9 @@ public interface CompanyService extends EntityService {
      * @param company Company entity with the updated field values.
      * @return The updated Company with the new values.
      * @throws CompanyServiceException Thrown if updating failed or Company is invalid or with invalid fields.
-     * @throws CompanyException        Thrown if updating the Company data base failed or Company is invalid or with
+     * @throws CompanyException        Thrown if updating the Company database failed or Company is invalid or with
      *                                 invalid fields.
-     * @throws UserException           Thrown if updating the User data base failed.
+     * @throws UserException           Thrown if updating the User database failed.
      */
     Company update(Company company) throws CompanyServiceException, CompanyException, UserException;
 

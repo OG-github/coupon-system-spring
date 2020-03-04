@@ -19,7 +19,7 @@ import java.util.Optional;
 import com.og.CouponSystemJB.entity.User;
 
 /**
- * Repository (DB DAO) for User entity using JPA Repository. This is a Data Base Data Access Object.
+ * Repository (DB DAO) for User entity using JPA Repository. This is a database Data Access Object.
  */
 @Repository
 public interface UserRepositorySql extends JpaRepository<User, Long> {

@@ -27,10 +27,12 @@ public class CustomerController {
     }
 
     /**
+     * Helper function that will return a ClientSession from the tokens HashMap by using the provided token. Each
+     * ClientSession is unique with a unique EntityService, and is mapped to a unique token in the map.
      *
      * @param token String token generated from the UUID class and given at login.
-     * @return
-     * @throws ClientSessionException
+     * @return Relevant ClientSession with the correct EntityService.
+     * @throws ClientSessionException Thrown if ClientSession was not located by using the provided token.
      */
     private ClientSession getSession(String token) throws ClientSessionException {
         ClientSession session = tokensMap.get(token);
@@ -41,10 +43,12 @@ public class CustomerController {
     }
 
     /**
+     * Helper function that will return the CustomerServiceImpl from the ClientSession it gets from the tokens Map, based
+     * on the provided token.
      *
      * @param token String token generated from the UUID class and given at login.
-     * @return
-     * @throws ClientSessionException
+     * @return CustomerServiceImpl the specific service for a specific Customer User.
+     * @throws ClientSessionException Thrown if ClientSession was not located by using the provided token.
      */
     private CustomerServiceImpl getService(String token) throws ClientSessionException {
         ClientSession session = this.getSession(token);
@@ -55,7 +59,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * @param token String token generated from the UUID class and given at login.
      * @return
      */
@@ -73,7 +76,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * @param token String token generated from the UUID class and given at login.
      * @return
      */
@@ -95,7 +97,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * @param token String token generated from the UUID class and given at login.
      * @return
      */
@@ -117,9 +118,8 @@ public class CustomerController {
     }
 
     /**
-     *
      * @param customer
-     * @param token String token generated from the UUID class and given at login.
+     * @param token    String token generated from the UUID class and given at login.
      * @return
      */
     @PostMapping("/update")
@@ -136,7 +136,6 @@ public class CustomerController {
     }
 
     /**
-     *
      * @param title
      * @param token String token generated from the UUID class and given at login.
      * @return
