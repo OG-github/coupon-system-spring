@@ -1,30 +1,59 @@
 package com.og.CouponSystemJB.rest.controller;
 
-import com.og.CouponSystemJB.entity.Coupon;
-import com.og.CouponSystemJB.entity.Customer;
-import com.og.CouponSystemJB.entity.CustomerCoupon;
-import com.og.CouponSystemJB.rest.ClientSession;
-import com.og.CouponSystemJB.rest.controller.exception.ClientSessionException;
-import com.og.CouponSystemJB.service.CustomerServiceImpl;
+/*----------------- IMPORTS -----------------------------------------------------------------------------------------*/
+
+/*-------------------- java --------------------*/
+
+/*---------- util ----------*/
+
+import java.util.Collection;
+import java.util.Map;
+
+/*-------------------- springframework --------------------*/
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.Map;
+/*-------------------- CouponSystemJB --------------------*/
 
+import com.og.CouponSystemJB.entity.Coupon;
+import com.og.CouponSystemJB.entity.Customer;
+import com.og.CouponSystemJB.entity.CustomerCoupon;
+import com.og.CouponSystemJB.rest.ClientSession;
+import com.og.CouponSystemJB.rest.controller.exception.ClientSessionException;
+import com.og.CouponSystemJB.service.CustomerServiceImpl;
+
+/**
+ * This Customer RESTful Controller will intercept all HTTP Customer requests. In order for the requests to be valid they
+ * must provide a Cookie with a token that validates their HTTP session. If the request is valid this controller will
+ * get the relevant ClientSession by using the provided token and will delegate the logic and handling of the request to
+ * the CustomerService within the ClientSession.
+ */
 @RestController
 @RequestMapping("/api/customer")
 public class CustomerController {
 
+    /*----------------- Fields ---------------------------------------------------------------------------------------*/
+
+    /* Component of tokens HashMap to provide the relevant ClientSession. */
     private Map<String, ClientSession> tokensMap;
 
+    /*----------------- Constructors ---------------------------------------------------------------------------------*/
+
+    /**
+     * Full Autowired constructor used automatically by Spring.
+     *
+     * @param tokensMap Component of tokens HashMap.
+     */
     @Autowired
     public CustomerController(@Qualifier("tokens") Map<String, ClientSession> tokensMap) {
         this.tokensMap = tokensMap;
     }
+
+    /*----------------- Methods / Functions -----------------------------------------------------------------------------*/
 
     /**
      * Helper function that will return a ClientSession from the tokens HashMap by using the provided token. Each
@@ -57,6 +86,30 @@ public class CustomerController {
         }
         return (CustomerServiceImpl) session.getService();
     }
+
+    /*----------------- RESTful --------------------------------------------------------------------------------------*/
+
+    /*----------------- Post mappings -----------------------*/
+
+    /**
+     * @param title
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
+    @PostMapping("/purchase")
+    public ResponseEntity purchase(@RequestParam String title, @CookieValue("randToken") String token) {
+        try {
+            CustomerServiceImpl service = this.getService(token);
+            return ResponseEntity.ok(service.purchaseCoupon(title));
+        }
+        catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(e.getMessage());
+        }
+    }
+
+    /*----------------- Get mappings -----------------------*/
 
     /**
      * @param token String token generated from the UUID class and given at login.
@@ -117,12 +170,14 @@ public class CustomerController {
         }
     }
 
+    /*----------------- Put mappings -----------------------*/
+
     /**
      * @param customer
      * @param token    String token generated from the UUID class and given at login.
      * @return
      */
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity update(@RequestBody Customer customer, @CookieValue("randToken") String token) {
         try {
             CustomerServiceImpl service = this.getService(token);
@@ -135,21 +190,4 @@ public class CustomerController {
         }
     }
 
-    /**
-     * @param title
-     * @param token String token generated from the UUID class and given at login.
-     * @return
-     */
-    @PostMapping("/purchase")
-    public ResponseEntity purchase(@RequestParam String title, @CookieValue("randToken") String token) {
-        try {
-            CustomerServiceImpl service = this.getService(token);
-            return ResponseEntity.ok(service.purchaseCoupon(title));
-        }
-        catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(e.getMessage());
-        }
-    }
 }

@@ -89,6 +89,32 @@ public class CompanyController {
 
     /*----------------- RESTful --------------------------------------------------------------------------------------*/
 
+    /*----------------- Post mappings -----------------------*/
+
+    /**
+     * HTTP post request to add a new Coupon that is issued by a specific Company to the database. The new Coupon
+     * must have a unique title that is not taken by another Coupon in our database and parameters that are not too
+     * short. This method will return a ResponseEntity with the new Coupon from the database. In order for the
+     * request to be valid a token who is mapped to a ClientSession with the correct EntityService must be provided.
+     *
+     * @param coupon JSON (without id) of Coupon in the body of the request.
+     * @param token  String token generated from the UUID class and given at login.
+     * @return ResponseEntity with the new Coupon from the database.
+     */
+    @PostMapping("/addCoupon")
+    public ResponseEntity addCoupon(@RequestBody Coupon coupon, @CookieValue("randToken") String token) {
+        try {
+            CompanyServiceImpl companyService = this.getService(token);
+            Coupon newCoupon = companyService.addCoupon(coupon);
+            return ResponseEntity.ok(newCoupon);
+        }
+        catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(e.getMessage());
+        }
+    }
+
     /*----------------- Get mappings -----------------------*/
 
     /**
@@ -150,49 +176,17 @@ public class CompanyController {
         }
     }
 
+    /*----------------- Put mappings -----------------------*/
+
     /**
+     * HTTP put request to update an existing Coupon from a specific Company in the database. The Coupon must belong
+     * to the issuing Company and the JSON representing it can not TODO check if can change title or anything else
+     *
      * @param coupon
      * @param token  String token generated from the UUID class and given at login.
      * @return
      */
-    @PostMapping("/addCoupon")
-    public ResponseEntity addCoupon(@RequestBody Coupon coupon, @CookieValue("randToken") String token) {
-        try {
-            CompanyServiceImpl companyService = this.getService(token);
-            Coupon newCoupon = companyService.addCoupon(coupon);
-            return ResponseEntity.ok(newCoupon);
-        }
-        catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(e.getMessage());
-        }
-    }
-
-    /**
-     * @param title
-     * @param token String token generated from the UUID class and given at login.
-     * @return
-     */
-    @DeleteMapping("/deleteCouponByTitle")
-    public ResponseEntity deleteCouponByTitle(@RequestParam String title, @CookieValue("randToken") String token) {
-        try {
-            CompanyServiceImpl companyService = this.getService(token);
-            return ResponseEntity.ok(companyService.deleteCouponByTitle(title));
-        }
-        catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(e.getMessage());
-        }
-    }
-
-    /**
-     * @param coupon
-     * @param token  String token generated from the UUID class and given at login.
-     * @return
-     */
-    @PostMapping("/updateCoupon")
+    @PutMapping("/updateCoupon")
     public ResponseEntity updateCoupon(@RequestBody Coupon coupon, @CookieValue("randToken") String token) {
         try {
             CompanyServiceImpl companyService = this.getService(token);
@@ -211,7 +205,7 @@ public class CompanyController {
      * @param token         String token generated from the UUID class and given at login.
      * @return
      */
-    @PostMapping("/useCoupon")
+    @PutMapping("/useCoupon")
     public ResponseEntity useCoupon(@RequestParam String couponTitle, @RequestParam String customerEmail,
                                     @CookieValue("randToken") String token) {
         try {
@@ -230,7 +224,7 @@ public class CompanyController {
      * @param token   String token generated from the UUID class and given at login.
      * @return
      */
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity update(@RequestBody Company company, @CookieValue("randToken") String token) {
         try {
             CompanyServiceImpl companyService = this.getService(token);
@@ -243,5 +237,23 @@ public class CompanyController {
         }
     }
 
+    /*----------------- Delete mappings -----------------------*/
+    /**
+     * @param title
+     * @param token String token generated from the UUID class and given at login.
+     * @return
+     */
+    @DeleteMapping("/deleteCouponByTitle")
+    public ResponseEntity deleteCouponByTitle(@RequestParam String title, @CookieValue("randToken") String token) {
+        try {
+            CompanyServiceImpl companyService = this.getService(token);
+            return ResponseEntity.ok(companyService.deleteCouponByTitle(title));
+        }
+        catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(e.getMessage());
+        }
+    }
 
 }

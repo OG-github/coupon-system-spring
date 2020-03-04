@@ -32,10 +32,19 @@ import com.og.CouponSystemJB.service.AdminServiceImpl;
  * must provide a Cookie with a token that validates their HTTP session. If the request is valid this controller will
  * get the relevant ClientSession by using the provided token and will delegate the logic and handling of the request to
  * the AdminService within the ClientSession.
- */
+ */ // TODO add constraints in the doco of every function and title of coupon is unique
+    // TODO FIX change updates to put mappings but not purchase coupon since were adding CustCoup
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
+    /*----------------- CONSTANTS ---------------------------------------------------------------------------------------*/
+
+    /* Deletion successful message for deleting Company from the database. */
+    private static final String DLT_COMP_MSG = "Company Removed Successfully";
+
+    /* Deletion successful message for deleting Customer from the database. */
+    private static final String DLT_CUST_MSG = "Customer Removed Successfully";
 
     /*----------------- Fields ---------------------------------------------------------------------------------------*/
 
@@ -93,9 +102,10 @@ public class AdminController {
     /*----------------- Post mappings -----------------------*/
 
     /**
-     * HTTP post request to add a new Company to the database. This method will return a ResponseEntity with the new
-     * Company from the database. In order for the request to be valid a token who is mapped to a ClientSession with
-     * the correct EntityService must be provided.
+     * HTTP post request to add a new Company to the database. The new Company must have an email that is not
+     * registered in the database by any User and also its parameters can not be too short. This method will return a
+     * ResponseEntity with the new Company from the database. In order or the request to be valid a token who is
+     * mapped to a ClientSession with the correct EntityService must be provided.
      *
      * @param company JSON (without id and Coupons) of Company in the body of the request.
      * @param token   String token generated from the UUID class and given at login.
@@ -116,9 +126,14 @@ public class AdminController {
     }
 
     /**
-     * @param customer
+     * HTTP post request to add a new Customer to the database. The new Customer must have an email that is not
+     * registered in the database by any User and also its parameters can not be too short. This method will return a
+     * ResponseEntity with the new Customer from the database. In order for the request to be valid a token who is
+     * mapped to a ClientSession with the correct EntityService must be provided.
+     *
+     * @param customer JSON (without id and CustomerCoupons) of Customer in the body of the request.
      * @param token    String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the new Customer from the database.
      */
     @PostMapping("/customers/add")
     public ResponseEntity addCustomer(@RequestBody Customer customer, @CookieValue("randToken") String token) {
@@ -143,7 +158,7 @@ public class AdminController {
      * EntityService must be provided.
      *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the all the Companies from the database.
      */
     @GetMapping("/companies/findAll")
     public ResponseEntity findAllCompanies(@CookieValue("randToken") String token) {
@@ -163,8 +178,12 @@ public class AdminController {
     }
 
     /**
+     * HTTP get request to retrieve all Customers from the database. This method will return a ResponseEntity with the
+     * relevant data. In order for the request to be valid a token who is mapped to a ClientSession with the correct
+     * EntityService must be provided.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the all the Customers from the database.
      */
     @GetMapping("/customers/findAll")
     public ResponseEntity findAllCustomers(@CookieValue("randToken") String token) {
@@ -184,8 +203,12 @@ public class AdminController {
     }
 
     /**
+     * HTTP get request to retrieve all Coupons from the database. This method will return a ResponseEntity with the
+     * relevant data. In order for the request to be valid a token who is mapped to a ClientSession with the correct
+     * EntityService must be provided.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the all the Coupons from the database.
      */
     @GetMapping("/coupons/findAll")
     public ResponseEntity findAllCoupons(@CookieValue("randToken") String token) {
@@ -205,9 +228,13 @@ public class AdminController {
     }
 
     /**
-     * @param email
+     * HTTP get request to retrieve a Company by their User email from the database. This method will return a
+     * ResponseEntity with the relevant data. In order for the request to be valid a token who is mapped to a
+     * ClientSession with the correct EntityService must be provided.
+     *
+     * @param email String email of the Company from the database.
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the Company from the database.
      */
     @GetMapping("/companies/findByEmail")
     public ResponseEntity findCompanyByEmail(@RequestParam String email, @CookieValue("randToken") String token) {
@@ -227,9 +254,13 @@ public class AdminController {
     }
 
     /**
-     * @param email
+     * HTTP get request to retrieve a Customer by their User email from the database. This method will return a
+     * ResponseEntity with the relevant data. In order for the request to be valid a token who is mapped to a
+     * ClientSession with the correct EntityService must be provided.
+     *
+     * @param email String email of the Customer from the database.
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the Company from the database.
      */
     @GetMapping("/customers/findByEmail")
     public ResponseEntity findCustomerByEmail(@RequestParam String email, @CookieValue("randToken") String token) {
@@ -251,16 +282,20 @@ public class AdminController {
     /*----------------- Delete mappings -----------------------*/
 
     /**
-     * @param email
+     * HTTP delete request to delete a Company by their User email from the database. This method will return a
+     * ResponseEntity with a deletion message. In order for the request to be valid a token who is mapped to a
+     * ClientSession with the correct EntityService must be provided.
+     *
+     * @param email String email of the Company to delete from the database.
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with a deletion message.
      */
     @DeleteMapping("/companies/delete")
     public ResponseEntity deleteCompanyByEmail(@RequestParam String email, @CookieValue("randToken") String token) {
         try {
             AdminServiceImpl adminService = this.getService(token);
             adminService.deleteCompanyByEmail(email);
-            return ResponseEntity.ok("Company Removed Successfully");
+            return ResponseEntity.ok(DLT_COMP_MSG);
         }
         catch (Exception e) {
             return ResponseEntity
@@ -270,16 +305,20 @@ public class AdminController {
     }
 
     /**
-     * @param email
+     * HTTP delete request to delete a Customer by their User email from the database. This method will return a
+     * ResponseEntity with a deletion message. In order for the request to be valid a token who is mapped to a
+     * ClientSession with the correct EntityService must be provided.
+     *
+     * @param email String email of the Customer to delete from the database.
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with a deletion message.
      */
     @DeleteMapping("/customers/delete")
     public ResponseEntity deleteCustomerByEmail(@RequestParam String email, @CookieValue("randToken") String token) {
         try {
             AdminServiceImpl adminService = this.getService(token);
             adminService.deleteCustomerByEmail(email);
-            return ResponseEntity.ok("Customer Removed Successfully");
+            return ResponseEntity.ok(DLT_CUST_MSG);
         }
         catch (Exception e) {
             return ResponseEntity
