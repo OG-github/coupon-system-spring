@@ -93,9 +93,10 @@ public class CompanyController {
 
     /**
      * HTTP post request to add a new Coupon that is issued by a specific Company to the database. The new Coupon
-     * must have a unique title that is not taken by another Coupon in our database and parameters that are not too
-     * short. This method will return a ResponseEntity with the new Coupon from the database. In order for the
-     * request to be valid a token who is mapped to a ClientSession with the correct EntityService must be provided.
+     * must have a unique title that is not taken by another Coupon in our database. In addition parameters can not be
+     * too short and null and the amount and price must be above 0. This method will return a ResponseEntity with the
+     * new Coupon from the database. In order for the request to be valid a token who is mapped to a ClientSession
+     * with the correct EntityService must be provided.
      *
      * @param coupon JSON (without id) of Coupon in the body of the request.
      * @param token  String token generated from the UUID class and given at login.
@@ -118,8 +119,13 @@ public class CompanyController {
     /*----------------- Get mappings -----------------------*/
 
     /**
+     * HTTP get request to retrieve the Company of the current Company User from the database. The Company that will
+     * be returned will only be the Company of the current User, and not any other Company. This method will return a
+     * ResponseEntity with the relevant data. In order for the request to be valid a token who is mapped to a
+     * ClientSession with the correct EntityService must be provided.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the Company from the database.
      */
     @GetMapping("/get")
     public ResponseEntity getCompany(@CookieValue("randToken") String token) {
@@ -135,8 +141,12 @@ public class CompanyController {
     }
 
     /**
+     * HTTP get request to retrieve all Coupons from the database. This method will return a ResponseEntity with the
+     * relevant data. In order for the request to be valid a token who is mapped to a ClientSession with the correct
+     * EntityService must be provided.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the all the Coupons from the database.
      */
     @GetMapping("/getAllCoupons")
     public ResponseEntity getAllCoupons(@CookieValue("randToken") String token) {
@@ -156,8 +166,12 @@ public class CompanyController {
     }
 
     /**
+     * HTTP get request to retrieve all Coupons issued by a specific Company from the database. This method will
+     * return a ResponseEntity with the relevant data. In order for the request to be valid a token who is mapped to
+     * a ClientSession with the correct EntityService must be provided.
+     *
      * @param token String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the all the Coupons of a Company from the database.
      */
     @GetMapping("/getCompanyCoupons")
     public ResponseEntity getCompanyCoupons(@CookieValue("randToken") String token) {
@@ -180,11 +194,14 @@ public class CompanyController {
 
     /**
      * HTTP put request to update an existing Coupon from a specific Company in the database. The Coupon must belong
-     * to the issuing Company and the JSON representing it can not TODO check if can change title or anything else
+     * to the issuing Company and the JSON representing it can not have an ID, the Coupon will be identified by its
+     * title (unique parameter) and the parameters can not be null or too short. In addition price and amount must be
+     * above 0. This method will return a ResponseEntity with the relevant data. In order for the request to be valid
+     * a token who is mapped to a ClientSession with the correct EntityService must be provided.
      *
-     * @param coupon
+     * @param coupon JSON (without id) of Coupon in the body of the request.
      * @param token  String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the updated Coupon.
      */
     @PutMapping("/updateCoupon")
     public ResponseEntity updateCoupon(@RequestBody Coupon coupon, @CookieValue("randToken") String token) {
@@ -200,10 +217,16 @@ public class CompanyController {
     }
 
     /**
-     * @param couponTitle
-     * @param customerEmail
+     * HTTP put request to update that a Customer has used a Coupon they have purchased. The Coupon will be
+     * identified by its title and the Customer by their email. The system will update the amount of the Coupon
+     * available to use for the Customer. This method will return a ResponseEntity with the relevant data. In order
+     * for the request to be valid a token who is mapped to a ClientSession with the correct EntityService must be
+     * provided.
+     *
+     * @param couponTitle   String title of the Coupon (unique parameter) to be used by the Customer.
+     * @param customerEmail String email of the Customer whom wants to use the Coupon.
      * @param token         String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with message about the use.
      */
     @PutMapping("/useCoupon")
     public ResponseEntity useCoupon(@RequestParam String couponTitle, @RequestParam String customerEmail,
@@ -220,9 +243,15 @@ public class CompanyController {
     }
 
     /**
-     * @param company
+     * HTTP put request to update a Company in the database. The JSON representing the Company must not have an ID,
+     * the parameters can not be too short, if email is changed it must not be taken by another User in the system
+     * and the JSON can not include the Company's Coupons. This method will return a ResponseEntity with the relevant
+     * data. In order for the request to be valid a token who is mapped to a ClientSession with the correct
+     * EntityService must be provided.
+     *
+     * @param company JSON of Company in the body of the request.
      * @param token   String token generated from the UUID class and given at login.
-     * @return
+     * @return ResponseEntity with the updated Company.
      */
     @PutMapping("/update")
     public ResponseEntity update(@RequestBody Company company, @CookieValue("randToken") String token) {
@@ -238,6 +267,7 @@ public class CompanyController {
     }
 
     /*----------------- Delete mappings -----------------------*/
+
     /**
      * @param title
      * @param token String token generated from the UUID class and given at login.

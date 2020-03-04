@@ -32,8 +32,7 @@ import com.og.CouponSystemJB.service.AdminServiceImpl;
  * must provide a Cookie with a token that validates their HTTP session. If the request is valid this controller will
  * get the relevant ClientSession by using the provided token and will delegate the logic and handling of the request to
  * the AdminService within the ClientSession.
- */ // TODO add constraints in the doco of every function and title of coupon is unique
-    // TODO FIX change updates to put mappings but not purchase coupon since were adding CustCoup
+ */
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
